@@ -40,22 +40,22 @@ const DropDownMenu = ({ menus }) => {
     <div ref={menuRef} className="md:hidden relative z-999999">
       <button
         onClick={() => setMenuOpen(!menuOpen)}
-        className="relative z-999999 flex flex-col justify-center items-center gap-1.5 w-9 h-9 rounded-xl bg-base-content border-purple-200"
+        className="relative z-999999 flex flex-col justify-center items-center gap-1.5 w-9 h-9 rounded-xl bg-base-content border-teal-200"
       >
         <span
-          className={`w-5 h-0.5 bg-purple-700 rounded-full transition-all duration-300 ${
+          className={`w-5 h-0.5 bg-teal-600 rounded-full transition-all duration-300 ${
             menuOpen ? "rotate-45 translate-y-2" : ""
           }`}
         />
 
         <span
-          className={`w-5 h-0.5 bg-purple-700 rounded-full transition-all duration-300 ${
+          className={`w-5 h-0.5 bg-teal-600 rounded-full transition-all duration-300 ${
             menuOpen ? "opacity-0" : ""
           }`}
         />
 
         <span
-          className={`w-5 h-0.5 bg-purple-700 rounded-full transition-all duration-300 ${
+          className={`w-5 h-0.5 bg-teal-600 rounded-full transition-all duration-300 ${
             menuOpen ? "-rotate-45 -translate-y-2" : ""
           }`}
         />
@@ -90,7 +90,7 @@ const DropDownMenu = ({ menus }) => {
             {menus.map((menu) => (
               <li key={menu.href}>
                 <NavLink href={menu.href} onClick={() => setMenuOpen(false)}>
-                  <span className="flex items-center gap-3 rounded-2xl px-4 py-3 text-gray-700 font-medium hover:bg-purple-500/10 hover:text-purple-700 transition-all duration-200">
+                  <span className="flex items-center gap-3 rounded-2xl px-4 py-3 text-gray-700 font-medium hover:bg-teal-500/10 hover:text-teal-700 transition-all duration-200">
                     {menu.icon} {menu.name}
                   </span>
                 </NavLink>

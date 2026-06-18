@@ -1,12 +1,9 @@
-import Footer from "@/components/mejor/Footer";
-import Navbar from "@/components/mejor/Navbar";
-import Image from "next/image";
+import Banner from "@/components/mejor/Banner";
 
 export default function Home() {
   return (
     <>
-    <Navbar />
-    <Footer />
+    <Banner />
     </>
   );
 }

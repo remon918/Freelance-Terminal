@@ -8,8 +8,8 @@ import avatar from "@/assets/user.png";
 const Navbar = () => {
   const menus = [
     { name: "Home", href: "/" },
-    { name: "Browse Tasks", href: "/browse-tasks" },
-    { name: "Browse Freelancers", href: "/browse-freelancers" },
+    { name: "Browse Tasks", href: "/browse-task" },
+    { name: "Browse Freelancers", href: "/browse-freelancer" },
   ];
 
   return (
@@ -44,13 +44,15 @@ const Navbar = () => {
 
         {/* Right */}
         <div className="flex items-center">
+          <Link href="/profile" >
           <Image
             src={avatar}
             alt="User"
-            width={35}
-            height={35}
+            width={36}
+            height={36}
             className="rounded-full border border-base-300 mr-2" 
           />
+          </Link>
 
           <Link
             href="/login"
