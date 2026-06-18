@@ -32,7 +32,7 @@ const ThemeController = () => {
   return (
     <button
       onClick={() => setTheme(theme === "deepBlue" ? "normal" : "deepBlue")}
-      className={` ${theme === "deepBlue" ? "" : "bg-[#06152b]/60"} fixed top-25 left-6 z-999 flex h-14 w-14 items-center justify-center rounded-full border border-white/20 text-white transparent shadow-2xl backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-95`}
+      className={` ${theme === "deepBlue" ? "" : "bg-[#06152b]/60"} fixed top-25 right-5 lg:right-51 md:right-25 z-999 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-white transparent shadow-2xl backdrop-blur-md transition-all duration-300 hover:scale-110 active:scale-95`}
     >
       {theme === "deepBlue" ? <FaSun size={22} /> : <FaMoon size={22} />}
     </button>

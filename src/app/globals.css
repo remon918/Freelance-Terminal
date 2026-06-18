@@ -1,13 +1,13 @@
 @import "tailwindcss";
-@import "@heroui/styles"; 
+@import "@heroui/styles";
 /* Light Theme - Soft Teal */
 
 :root {
   background: linear-gradient(
     to bottom,
-    #d7f1ed,
-    #95e6da,
-    #5ef0dc
+    #d2f2ec,
+    #9df7e8,
+    #d2f2ec
   );
 
   color: #0f172a;
@@ -16,7 +16,7 @@
 :root body {
   background: transparent;
   color: #0f172a;
-  transition: all 0.3s ease;
+  transition: all 0s ease;
 }
 
 /* Dark Theme - আগেরটাই */
@@ -24,9 +24,9 @@
 :root[data-theme="deepBlue"] {
   background: linear-gradient(
     to bottom,
-    #06152b,
-    #0a2342,
-    #102f56
+    #020916,
+    #071c37,
+    #020916
   );
 
   color: white;
@@ -35,5 +35,5 @@
 :root[data-theme="deepBlue"] body {
   background: transparent;
   color: white;
-  transition: all 0.3s ease;
+  transition: all 0s ease;
 }
