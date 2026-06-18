@@ -40,7 +40,7 @@ const DropDownMenu = ({ menus }) => {
     <div ref={menuRef} className="md:hidden relative z-999999">
       <button
         onClick={() => setMenuOpen(!menuOpen)}
-        className="relative z-999999 flex flex-col justify-center items-center gap-1.5 w-9 h-9 rounded-xl bg-base-content border-teal-200"
+        className="relative z-999999 flex flex-col justify-center items-center gap-1 w-9 h-9 rounded-xl bg-base-content border-teal-200"
       >
         <span
           className={`w-5 h-0.5 bg-teal-600 rounded-full transition-all duration-300 ${

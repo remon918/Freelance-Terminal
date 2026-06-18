@@ -9,6 +9,8 @@ const Banner = () => {
     "Architecture & Interior Design",
     "UGC Videos",
     "Video Editing",
+    "Graphic Design",
+    "Digital Marketing",
   ];
 
   return (
@@ -25,7 +27,7 @@ const Banner = () => {
       <div className="relative mx-auto w-[95%] lg:w-[76%]">
         <div className="flex flex-col items-center text-center">
           {/* Badge */}
-          <div className="mt-8 mb-5 rounded-full border border-base-300 bg-base-100/50 px-4 py-2 text-sm font-medium backdrop-blur">
+          <div className="md:mt-3 mb-3 md:mb-5 rounded-full border border-base-300 bg-base-100/50 px-4 py-2 text-sm font-medium backdrop-blur">
             🚀 Freelance Marketplace Platform
           </div>
 
@@ -72,7 +74,7 @@ const Banner = () => {
           </div>
 
           {/* Categories */}
-          <div className="mt-12 flex flex-wrap justify-center gap-2 md:gap-4">
+          <div className="mt-18 flex flex-wrap justify-center gap-2 md:gap-4">
             {categories.map((item) => (
               <div
                 key={item}
@@ -80,25 +82,25 @@ const Banner = () => {
                   group
                   flex
                   items-center
-                  gap-3
+                  gap-2
                   rounded-2xl
                   border
                   border-base-300
-                  bg-base-100/40 px-3
-                  py-2
+                  bg-base-100/40 px-2
+                  py-1.5
                   md:px-5
                   md:py-4
                   cursor-pointer
-                  font-xs
+                  
                   md:font-medium
-                  text-sm
+                  text-xs
                   md:text-md
                   backdrop-blur-md
                   transition-all
                   duration-300
                   hover:-translate-y-1
                   hover:border-primary/40
-                  hover:shadow-xl
+                  hover:shadow-md
                 "
               >
                 <span>{item}</span>
@@ -109,7 +111,7 @@ const Banner = () => {
           </div>
 
           {/* Trusted By */}
-          <div className="mt-7 w-full max-w-5xl">
+          <div className="mt-8 w-full max-w-5xl">
             <div className="mb-4 flex items-center justify-center gap-4">
               <div className="h-px flex-1 bg-base-300" />
 
@@ -132,7 +134,7 @@ const Banner = () => {
               </div>
 
               <div className="flex items-center gap-2 text-base-content/60 transition hover:text-base-content">
-                <SiNetflix className="text-xl" />
+                <SiNetflix className="text-lg" />
                 <span className="font-semibold">Netflix</span>
               </div>
 

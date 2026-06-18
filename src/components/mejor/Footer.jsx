@@ -24,7 +24,7 @@ const Footer = () => {
               marketplace.
             </p>
 
-            <div className="mt-6 flex items-center gap-3">
+            <div className="mt-3 flex items-center gap-3">
               <a className="rounded-xl border border-base-300 p-2 transition hover:bg-base-200">
                 <FaFacebookF />
               </a>

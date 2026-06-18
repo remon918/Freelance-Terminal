@@ -4,6 +4,7 @@ import ThemeController from "../components/minor/ThemeController";
 import Scroll from "../components/minor/Scroll";
 import Navbar from "@/components/mejor/Navbar";
 import Footer from "@/components/mejor/Footer";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +33,7 @@ export default function RootLayout({ children }) {
         <Footer />
         <ThemeController />
         <Scroll />
+        <Toaster  position="bottom-right" />
         </body>
     </html>
   );
