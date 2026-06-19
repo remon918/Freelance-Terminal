@@ -36,7 +36,7 @@ const stats = [
 
 export default function ClientDashboard() {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 mt-10 md:mt-0">
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>

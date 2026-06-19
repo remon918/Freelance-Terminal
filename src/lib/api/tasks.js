@@ -13,3 +13,9 @@ export const getMyTasks = async (clientId) => {
 
   return res.json();
 };
+
+
+export const getTaskDetails = async (taskId) => {
+  const res = await fetch(`${baseUrl}/api/tasks/${taskId}`);
+  return res.json();
+};

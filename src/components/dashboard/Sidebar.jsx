@@ -33,17 +33,6 @@ export default function Sidebar() {
       href: "/client",
     },
     {
-      name: "Profile Preview",
-      icon: User,
-      href: "/client/profile",
-    },
-
-    {
-      name: "Browse Freelancers",
-      icon: Search,
-      href: "/browse-freelancer",
-    },
-    {
       name: "My Tasks",
       icon: ClipboardList,
       href: "/client/tasks",

@@ -1,9 +1,13 @@
+"use client";
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { FaGoogle, FaPaypal, FaArrowRight } from "react-icons/fa";
 import { FiExternalLink } from "react-icons/fi";
 import { SiMeta, SiNetflix, SiPayoneer } from "react-icons/si";
 
 const Banner = () => {
+  const { data: session } = authClient.useSession();
+
   const categories = [
     "Website Development",
     "Architecture & Interior Design",
@@ -62,30 +66,61 @@ const Banner = () => {
             className="mt-5 flex flex-wrap justify-center gap-4 banner-in"
             style={{ animationDelay: "240ms" }}
           >
-            <Link
-              href="/browse-task"
-              className="btn btn-primary border px-5 py-2 rounded-md btn-md md:btn-lg transition-all
+            {session?.user?.role === "client" ? (
+              <>
+                <Link
+                  href="/browse-freelancer"
+                  className="btn btn-primary border px-5 py-2 rounded-md btn-md md:btn-lg transition-all
                   duration-300
                   hover:-translate-y-1
                   hover:border-primary/40
-                  hover:shadow-xl font-semibold bg-teal-500 hover:bg-teal-300 flex items-center gap-2"
-            >
-              Browse Tasks
-              <FiExternalLink />
-            </Link>
+                  hover:shadow-xl font-semibold bg-teal-600 hover:bg-teal-400 flex items-center gap-2"
+                >
+                  Browse Freelancers
+                  <FiExternalLink />
+                </Link>
 
-            <Link
-              href="/profile"
-              className="btn btn-outline border px-5 py-2 rounded btn-md md:btn-lg 
+                <Link
+                  href="/client/tasks"
+                  className="btn btn-outline border px-5 py-2 rounded btn-md md:btn-lg 
                   transition-all
                   duration-300
                   hover:-translate-y-1
                   hover:border-primary/40
                   hover:shadow-xl font-semibold flex items-center gap-2"
-            >
-              Profile Preview
-              <FiExternalLink />
-            </Link>
+                >
+                  My Tasks
+                  <FiExternalLink />
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/browse-task"
+                  className="btn btn-primary border px-5 py-2 rounded-md btn-md md:btn-lg transition-all
+                  duration-300
+                  hover:-translate-y-1
+                  hover:border-primary/40
+                  hover:shadow-xl font-semibold bg-teal-600 hover:bg-teal-400 flex items-center gap-2"
+                >
+                  Browse Tasks
+                  <FiExternalLink />
+                </Link>
+
+                <Link
+                  href="/profile"
+                  className="btn btn-outline border px-5 py-2 rounded btn-md md:btn-lg 
+                  transition-all
+                  duration-300
+                  hover:-translate-y-1
+                  hover:border-primary/40
+                  hover:shadow-xl font-semibold flex items-center gap-2"
+                >
+                  Profile Preview
+                  <FiExternalLink />
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Categories */}
