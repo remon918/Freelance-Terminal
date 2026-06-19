@@ -34,7 +34,7 @@ const Banner = () => {
             className="md:mt-3 mb-3 rounded-full border border-base-300 bg-base-100/50 px-4 py-2 text-sm font-medium backdrop-blur banner-in"
             style={{ animationDelay: "0ms" }}
           >
-            🚀 Freelance Marketplace Platform
+            🚀 Best Freelance Marketplace
           </div>
 
           {/* Heading */}

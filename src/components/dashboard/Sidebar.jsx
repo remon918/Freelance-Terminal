@@ -15,44 +15,96 @@ import {
   ChevronRight,
   Menu,
   X,
+  Search,
+  BriefcaseBusiness,
+  DollarSign,
+  UserRoundPen,
 } from "lucide-react";
-import { authClient } from "@/lib/auth-client";
 
-const menuItems = [
-  {
-    name: "Overview",
-    icon: LayoutGrid,
-    href: "/client",
-  },
-  {
-    name: "Profile Preview",
-    icon: User,
-    href: "/client/profile",
-  },
-  {
-    name: "My Tasks",
-    icon: ClipboardList,
-    href: "/client/tasks",
-  },
-  {
-    name: "Post Task",
-    icon: PlusCircle,
-    href: "/client/tasks/post-task",
-  },
-  {
-    name: "Proposals",
-    icon: FileText,
-    href: "/dashboard/proposals",
-  },
-  {
-    name: "Payments",
-    icon: Wallet,
-    href: "/dashboard/payments",
-  },
-];
+import { authClient } from "@/lib/auth-client";
 
 export default function Sidebar() {
   const { data: session, isPending } = authClient.useSession();
+
+  const clientLinks = [
+    {
+      name: "Overview",
+      icon: LayoutGrid,
+      href: "/client",
+    },
+    {
+      name: "Profile Preview",
+      icon: User,
+      href: "/client/profile",
+    },
+
+    {
+      name: "Browse Freelancers",
+      icon: Search,
+      href: "/browse-freelancer",
+    },
+    {
+      name: "My Tasks",
+      icon: ClipboardList,
+      href: "/client/tasks",
+    },
+    {
+      name: "Post Task",
+      icon: PlusCircle,
+      href: "/client/tasks/post-task",
+    },
+    {
+      name: "Proposals",
+      icon: FileText,
+      href: "/dashboard/proposals",
+    },
+    {
+      name: "Payments",
+      icon: Wallet,
+      href: "/dashboard/payments",
+    },
+  ];
+
+  const freelancerLinks = [
+    {
+      name: "Overview",
+      icon: LayoutGrid,
+      href: "/freelancer",
+    },
+    {
+      name: "Profile Preview",
+      icon: UserRoundPen,
+      href: "/freelancer/profile",
+    },
+    {
+      name: "Browse Tasks",
+      icon: Search,
+      href: "/browse-task",
+    },
+    {
+      name: "My Proposals",
+      icon: FileText,
+      href: "/freelancer/my-proposals",
+    },
+    {
+      name: "Active Projects",
+      icon: BriefcaseBusiness,
+      href: "/freelancer/active-projects",
+    },
+    {
+      name: "Earnings",
+      icon: DollarSign,
+      href: "/freelancer/earnings",
+    },
+  ];
+  const linksMap = {
+    client: clientLinks,
+    freelancer: freelancerLinks,
+  };
+
+  const role = session?.user?.role || "client";
+
+  const menuItems = linksMap[role];
 
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -84,14 +136,14 @@ export default function Sidebar() {
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-40 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 backdrop-blur-md md:hidden"
         />
       )}
 
       {/* Sidebar */}
       <aside
         className={`
-      fixed left-0 top-0 z-50 flex h-screen w-60 flex-col
+      fixed left-0 top-0 z-50 flex h-screen w-65 flex-col
       border-r border-cyan-400/20
       
       p-4
@@ -145,7 +197,7 @@ export default function Sidebar() {
                     className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all ${
                       isActive
                         ? "bg-cyan-500/15 text-cyan-500"
-                        : "bg-white/5 text-slate-400 group-hover:bg-cyan-500/10 group-hover:text-cyan-400"
+                        : "  group-hover:bg-cyan-500/10 group-hover:text-cyan-400"
                     }`}
                   >
                     <Icon size={18} />
@@ -163,9 +215,7 @@ export default function Sidebar() {
                 <ChevronRight
                   size={16}
                   className={`transition-all ${
-                    isActive
-                      ? "text-cyan-400"
-                      : "text-slate-500 group-hover:text-cyan-400"
+                    isActive ? "text-cyan-400" : " group-hover:text-cyan-400"
                   }`}
                 />
               </Link>
@@ -208,7 +258,9 @@ export default function Sidebar() {
               <div>
                 <h4 className="text-sm font-semibold">{session?.user?.name}</h4>
 
-                <p className="text-[11px] text-slate-400">Frontend Developer</p>
+                <p className="text-[11px] text-cyan-400 font-semibold">
+                  {session?.user?.role}
+                </p>
               </div>
             </div>
           </div>

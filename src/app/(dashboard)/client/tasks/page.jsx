@@ -2,7 +2,7 @@ import React from 'react';
 
 const TasksPage = () => {
     return (
-        <div>
+        <div className="mt-9 md:mt-0">
             tasks
         </div>
     );
