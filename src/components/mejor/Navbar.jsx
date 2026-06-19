@@ -11,17 +11,51 @@ import avatar from "@/assets/user.png";
 
 const Navbar = () => {
   const { data: session, isPending } = authClient.useSession();
+  
+  const userImage =
+    typeof session?.user?.image === "string" &&
+    session.user.image.startsWith("http")
+      ? session.user.image
+      : avatar;
 
-  // ইমেজ যদি স্ট্রিং হয় এবং http/https দিয়ে শুরু হয় তবেই সেটা দেখাবে, নাহলে লোকাল 'avatar' দেখাবে
-  const userImage = (typeof session?.user?.image === 'string' && session.user.image.startsWith('http'))
-    ? session.user.image
-    : avatar;
 
-  const menus = [
-    { name: "Home", href: "/" },
-    { name: "Browse Tasks", href: "/browse-task" },
-    { name: "Browse Freelancers", href: "/browse-freelancer" },
-  ];
+  const menus = session?.user
+    ? [
+        { name: "Home", href: "/" },
+        {
+          name: "Profile",
+          href:
+            session.user.role === "freelancer"
+              ? "/freelancer/profile"
+              : "/client/profile",
+        },
+        {
+          name: "Dashboard",
+          href:
+            session.user.role === "freelancer"
+              ? "/freelancer"
+              : "/client",
+        },
+
+        ...(session.user.role === "freelancer"
+          ? [
+              {
+                name: "Browse Tasks",
+                href: "/browse-task",
+              },
+            ]
+          : [
+              {
+                name: "Browse Freelancers",
+                href: "/browse-freelancer",
+              },
+            ]),
+      ]
+    : [
+        { name: "Home", href: "/" },
+        { name: "Browse Tasks", href: "/browse-task" },
+        { name: "Browse Freelancers", href: "/browse-freelancer" },
+      ];
 
   const handleLogout = async () => {
     const { error } = await authClient.signOut();
@@ -38,7 +72,6 @@ const Navbar = () => {
   return (
     <header className=" z-50 py-3">
       <nav className="mx-auto flex w-[95%] items-center justify-between rounded-2xl border border-base-300 px-2 md:px-4 py-3 shadow-md  lg:w-[76%]">
-        
         {/* Left */}
         <div className="flex items-center gap-1">
           <DropDownMenu menus={menus} />

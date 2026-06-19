@@ -37,7 +37,7 @@ const DropDownMenu = ({ menus }) => {
   }, [menuOpen]);
 
   return (
-    <div ref={menuRef} className="md:hidden relative z-999999">
+    <div ref={menuRef} className="lg:hidden relative z-999999">
       <button
         onClick={() => setMenuOpen(!menuOpen)}
         className="relative z-999999 flex flex-col justify-center items-center gap-1 w-9 h-9 rounded-xl bg-base-content border-teal-200"
