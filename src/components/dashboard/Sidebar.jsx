@@ -68,7 +68,7 @@ export default function Sidebar() {
     {
       name: "Browse Tasks",
       icon: Search,
-      href: "/browse-task",
+      href: "/freelancer/browse-task",
     },
     {
       name: "My Proposals",
@@ -110,14 +110,14 @@ export default function Sidebar() {
             {" "}
             <Menu size={20} className="text-cyan-400" />{" "}
           </button>
-          <div>
+          <Link href={"/"}>
             <h2 className="text-lg font-bold leading-none">
               Freelance
               <span className="text-cyan-400">Terminal</span>
             </h2>
 
             <p className="mt-1 text-[10px]">Freelance Marketplace</p>
-          </div>
+          </Link>
         </div>
       )}
 

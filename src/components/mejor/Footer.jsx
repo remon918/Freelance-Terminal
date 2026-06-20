@@ -14,9 +14,14 @@ const Footer = () => {
           
           {/* Brand */}
           <div className="lg:col-span-2">
-            <h2 className="text-2xl font-bold tracking-tight">
-              Freelance-Terminal
+            <Link href={"/"}>
+            <h2 className="text-2xl font-bold leading-none">
+              Freelance
+              <span className="text-cyan-400">Terminal</span>
             </h2>
+
+            <p className="mt-1  text-sn">Freelance Marketplace</p>
+          </Link>
 
             <p className="mt-4 max-w-md text-sm leading-6 text-base-content/70">
               Connect with skilled freelancers and discover quality projects.

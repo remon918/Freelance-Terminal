@@ -61,19 +61,18 @@ const Banner = () => {
             to creative services, find the right expert for every project.
           </p>
 
-          {/* Buttons */}
+          {/* Buttons based on user roles */}
           <div
             className="mt-5 flex flex-wrap justify-center gap-4 banner-in"
             style={{ animationDelay: "240ms" }}
           >
-            {session?.user?.role === "client" ? (
+            {/* 1. Client Role Buttons */}
+            {session?.user && session.user.role === "client" && (
               <>
                 <Link
                   href="/browse-freelancer"
                   className="btn btn-primary border px-5 py-2 rounded-md btn-md md:btn-lg transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:border-primary/40
+                  duration-300 hover:-translate-y-1 hover:border-primary/40
                   hover:shadow-xl font-semibold bg-teal-600 hover:bg-teal-400 flex items-center gap-2"
                 >
                   Browse Freelancers
@@ -83,24 +82,22 @@ const Banner = () => {
                 <Link
                   href="/client/tasks"
                   className="btn btn-outline border px-5 py-2 rounded btn-md md:btn-lg 
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:border-primary/40
+                  transition-all duration-300 hover:-translate-y-1 hover:border-primary/40
                   hover:shadow-xl font-semibold flex items-center gap-2"
                 >
                   My Tasks
                   <FiExternalLink />
                 </Link>
               </>
-            ) : (
+            )}
+
+            {/* 2. Freelancer Role Buttons */}
+            {session?.user && session.user.role === "freelancer" && (
               <>
                 <Link
                   href="/browse-task"
                   className="btn btn-primary border px-5 py-2 rounded-md btn-md md:btn-lg transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:border-primary/40
+                  duration-300 hover:-translate-y-1 hover:border-primary/40
                   hover:shadow-xl font-semibold bg-teal-600 hover:bg-teal-400 flex items-center gap-2"
                 >
                   Browse Tasks
@@ -108,15 +105,37 @@ const Banner = () => {
                 </Link>
 
                 <Link
-                  href="/profile"
+                  href="/freelancer/profile" // Change this route to match your profile routing structure
                   className="btn btn-outline border px-5 py-2 rounded btn-md md:btn-lg 
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:border-primary/40
+                  transition-all duration-300 hover:-translate-y-1 hover:border-primary/40
                   hover:shadow-xl font-semibold flex items-center gap-2"
                 >
                   Profile Preview
+                  <FiExternalLink />
+                </Link>
+              </>
+            )}
+
+            {/* 3. Guest / No User Buttons */}
+            {!session?.user && (
+              <>
+                <Link
+                  href="/browse-task"
+                  className="btn btn-primary border px-5 py-2 rounded-md btn-md md:btn-lg transition-all
+                  duration-300 hover:-translate-y-1 hover:border-primary/40
+                  hover:shadow-xl font-semibold bg-teal-600 hover:bg-teal-400 flex items-center gap-2"
+                >
+                  Browse Tasks
+                  <FiExternalLink />
+                </Link>
+
+                <Link
+                  href="/browse-freelancer"
+                  className="btn btn-outline border px-5 py-2 rounded btn-md md:btn-lg 
+                  transition-all duration-300 hover:-translate-y-1 hover:border-primary/40
+                  hover:shadow-xl font-semibold flex items-center gap-2"
+                >
+                  Browse Freelancers
                   <FiExternalLink />
                 </Link>
               </>

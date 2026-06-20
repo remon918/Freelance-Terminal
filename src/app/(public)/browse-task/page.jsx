@@ -9,7 +9,7 @@ const TasksPage = async () => {
 
 const tasks = await res.json();
     return (
-        <div className="mt-9 md:mt-0">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 mt-9 ">
             <h2 className="text-2xl font-bold mb-6">Browse All Tasks</h2>
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
                 {tasks.map((task) => (

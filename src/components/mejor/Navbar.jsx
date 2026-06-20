@@ -11,45 +11,30 @@ import avatar from "@/assets/user.png";
 
 const Navbar = () => {
   const { data: session, isPending } = authClient.useSession();
-  
+
   const userImage =
     typeof session?.user?.image === "string" &&
     session.user.image.startsWith("http")
       ? session.user.image
       : avatar;
 
-
   const menus = session?.user
     ? [
         { name: "Home", href: "/" },
         {
-          name: "Profile",
-          href:
-            session.user.role === "freelancer"
-              ? "/freelancer/profile"
-              : "/client/profile",
-        },
-        {
           name: "Dashboard",
-          href:
-            session.user.role === "freelancer"
-              ? "/freelancer"
-              : "/client",
+          href: session.user.role === "freelancer" ? "/freelancer" : "/client",
         },
 
-        ...(session.user.role === "freelancer"
-          ? [
-              {
-                name: "Browse Tasks",
-                href: "/browse-task",
-              },
-            ]
-          : [
-              {
-                name: "Browse Freelancers",
-                href: "/browse-freelancer",
-              },
-            ]),
+        {
+          name: "Browse Tasks",
+          href: "/browse-task",
+        },
+
+        {
+          name: "Browse Freelancers",
+          href: "/browse-freelancer",
+        },
       ]
     : [
         { name: "Home", href: "/" },
@@ -76,12 +61,13 @@ const Navbar = () => {
         <div className="flex items-center gap-1">
           <DropDownMenu menus={menus} />
 
-          <Link
-            href="/"
-            className="md:text-xl text-lg font-bold tracking-tight"
-          >
-            <span className="">Freelance</span>
-            <span className="">-Terminal</span>
+          <Link href={"/"}>
+            <h2 className="text-lg font-bold leading-none">
+              Freelance
+              <span className="text-cyan-400">Terminal</span>
+            </h2>
+
+            <p className="mt-1 text-[10px]">Freelance Marketplace</p>
           </Link>
         </div>
 

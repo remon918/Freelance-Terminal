@@ -50,7 +50,7 @@ const TasksPage = () => {
           </p>
           
           <Link 
-            href="/client/tasks/create" 
+            href="/client/tasks/post-task" 
             className="inline-flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-white font-medium text-sm px-5 py-2.5 rounded-xl shadow-sm transition-all"
           >
             <PlusCircle className="w-4 h-4" />
