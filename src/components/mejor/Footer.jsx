@@ -11,17 +11,25 @@ const Footer = () => {
     <footer className="mt-24 border-t border-base-300">
       <div className="mx-auto w-[95%] lg:w-[76%] py-14">
         <div className="grid gap-10 grid-cols-2 lg:grid-cols-5">
-          
           {/* Brand */}
           <div className="lg:col-span-2">
-            <Link href={"/"}>
-            <h2 className="text-2xl font-bold leading-none">
-              Freelance
-              <span className="text-cyan-400">Terminal</span>
-            </h2>
+            <Link
+              href="/"
+              className="mb-6 mt-8 flex items-center gap-3 md:mt-0"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl shadow-[0_0_20px_rgba(34,211,238,.25)]">
+                <span className="text-2xl font-bold text-cyan-400">F</span>
+              </div>
 
-            <p className="mt-1  text-sn">Freelance Marketplace</p>
-          </Link>
+              <div className="">
+                <h2 className="text-lg font-bold leading-none">
+                  Freelance
+                  <span className="text-cyan-400">Terminal</span>
+                </h2>
+
+                <p className="mt-1 text-[10px]">Freelance Marketplace</p>
+              </div>
+            </Link>
 
             <p className="mt-4 max-w-md text-sm leading-6 text-base-content/70">
               Connect with skilled freelancers and discover quality projects.
@@ -50,99 +58,69 @@ const Footer = () => {
 
           {/* Marketplace */}
           <div>
-            <h3 className="mb-4 font-semibold">
-              Marketplace
-            </h3>
+            <h3 className="mb-4 font-semibold">Marketplace</h3>
 
             <ul className="space-y-3 text-sm text-base-content/70">
               <li>
-                <Link href="/browse-tasks">
-                  Browse Tasks
-                </Link>
+                <Link href="/browse-tasks">Browse Tasks</Link>
               </li>
 
               <li>
-                <Link href="/browse-freelancers">
-                  Browse Freelancers
-                </Link>
+                <Link href="/browse-freelancers">Browse Freelancers</Link>
               </li>
 
               <li>
-                <Link href="/post-task">
-                  Post a Task
-                </Link>
+                <Link href="/post-task">Post a Task</Link>
               </li>
 
               <li>
-                <Link href="/categories">
-                  Categories
-                </Link>
+                <Link href="/categories">Categories</Link>
               </li>
             </ul>
           </div>
 
           {/* Company */}
           <div>
-            <h3 className="mb-4 font-semibold">
-              Company
-            </h3>
+            <h3 className="mb-4 font-semibold">Company</h3>
 
             <ul className="space-y-3 text-sm text-base-content/70">
               <li>
-                <Link href="/about">
-                  About
-                </Link>
+                <Link href="/about">About</Link>
               </li>
 
               <li>
-                <Link href="/contact">
-                  Contact
-                </Link>
+                <Link href="/contact">Contact</Link>
               </li>
 
               <li>
-                <Link href="/careers">
-                  Careers
-                </Link>
+                <Link href="/careers">Careers</Link>
               </li>
 
               <li>
-                <Link href="/blog">
-                  Blog
-                </Link>
+                <Link href="/blog">Blog</Link>
               </li>
             </ul>
           </div>
 
           {/* Support */}
           <div>
-            <h3 className="mb-4 font-semibold">
-              Support
-            </h3>
+            <h3 className="mb-4 font-semibold">Support</h3>
 
             <ul className="space-y-3 text-sm text-base-content/70">
               <li>
-                <Link href="/faq">
-                  FAQ
-                </Link>
+                <Link href="/faq">FAQ</Link>
               </li>
 
               <li>
-                <Link href="/help-center">
-                  Help Center
-                </Link>
+                <Link href="/help-center">Help Center</Link>
               </li>
 
               <li>
-                <Link href="/privacy">
-                  Privacy Policy
-                </Link>
+                <Link href="/privacy">Privacy Policy</Link>
               </li>
 
               <li>
-                <Link href="/terms">
-                  Terms & Conditions
-                </Link>
+                <Link href="/terms">Terms & Conditions</Link>
               </li>
             </ul>
           </div>
@@ -153,8 +131,8 @@ const Footer = () => {
       <div className="border-t border-base-300">
         <div className="mx-auto flex w-[95%] lg:w-[76%] flex-col items-center justify-between gap-4 py-5 text-sm text-base-content/60 md:flex-row">
           <p>
-            © {new Date().getFullYear()} Freelance-Terminal.
-            All rights reserved.
+            © {new Date().getFullYear()} Freelance-Terminal. All rights
+            reserved.
           </p>
 
           <div className="flex items-center gap-5">

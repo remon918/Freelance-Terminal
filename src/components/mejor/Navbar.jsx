@@ -25,12 +25,10 @@ const Navbar = () => {
           name: "Dashboard",
           href: session.user.role === "freelancer" ? "/freelancer" : "/client",
         },
-
         {
           name: "Browse Tasks",
           href: "/browse-task",
         },
-
         {
           name: "Browse Freelancers",
           href: "/browse-freelancer",
@@ -55,28 +53,38 @@ const Navbar = () => {
   };
 
   return (
-    <header className=" z-50 py-3">
-      <nav className="mx-auto flex w-[95%] items-center justify-between rounded-2xl border border-base-300 px-2 md:px-4 py-3 shadow-md  lg:w-[76%]">
+    // header থেকে অতিরিক্ত py-3 বাদ দিয়ে শুধুমাত্র sticky/z-index এর জন্য রাখা হয়েছে
+    <header className="z-50 py-2">
+      <nav className="mx-auto flex w-[95%] items-center justify-between rounded-2xl border border-base-300 px-3 py-2.5 shadow-md lg:w-[76%]">
         {/* Left */}
-        <div className="flex items-center gap-1">
-          <DropDownMenu menus={menus} />
+        <div className="flex items-center gap-2">
+          {/* Mobile Menu */}
+          <div className="block md:hidden">
+            <DropDownMenu menus={menus} />
+          </div>
 
-          <Link href={"/"}>
-            <h2 className="text-lg font-bold leading-none">
-              Freelance
-              <span className="text-cyan-400">Terminal</span>
-            </h2>
+          {/* এখানে mb-6 এবং mt-8 বাদ দেওয়া হয়েছে, ফলে হাইট স্বাভাবিক থাকবে */}
+          <Link href="/" className="flex items-center gap-3">
+            {/* Desktop Logo */}
+            <div className="hidden h-9 w-9 items-center justify-center rounded-xl shadow-[0_0_20px_rgba(34,211,238,.25)] md:flex">
+              <span className="text-xl font-bold text-cyan-400">F</span>
+            </div>
 
-            <p className="mt-1 text-[10px]">Freelance Marketplace</p>
+            <div className="leading-tight">
+              <h2 className="text-base font-bold md:text-lg">
+                Freelance<span className="text-cyan-400">Terminal</span>
+              </h2>
+              <p className="text-[9px] md:text-[10px]">Freelance Marketplace</p>
+            </div>
           </Link>
         </div>
 
         {/* Center */}
-        <ul className="hidden lg:flex items-center gap-12">
+        <ul className="hidden lg:flex items-center gap-8">
           {menus.map((menu) => (
             <li key={menu.href}>
               <NavLink href={menu.href}>
-                <span className="font-medium transition-colors hover:text-primary">
+                <span className="font-medium text-sm transition-colors hover:text-primary">
                   {menu.name}
                 </span>
               </NavLink>
@@ -85,19 +93,18 @@ const Navbar = () => {
         </ul>
 
         {/* Right */}
-        <div className="flex items-center">
+        <div className="flex items-center gap-2">
           {isPending ? (
-            <div className="h-9 w-24 animate-pulse rounded-xl bg-base-200" />
+            <div className="h-8 w-20 animate-pulse rounded-xl bg-base-200" />
           ) : session?.user ? (
             <>
-              <Link href="/profile">
+              <Link href="/profile" className="flex items-center">
                 <Image
-                  src={userImage} // 👈 এখানে পরিবর্তন করা হয়েছে
+                  src={userImage}
                   alt="User"
-                  width={35}
-                  height={35}
-                  className="rounded-full border border-base-300 md:mr-2 object-cover"
-                  // 👈 কোনো কারণে ইমেজ লিংক ব্রোকেন বা ইনভ্যালিড হলে নিচের ফলব্যাকটি কাজ করবে
+                  width={32}
+                  height={32}
+                  className="rounded-full border border-base-300 object-cover"
                   onError={(e) => {
                     e.currentTarget.src = avatar.src || avatar;
                   }}
@@ -107,7 +114,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="rounded-xl md:border border-base-300 px-3 py-2 text-sm cursor-pointer font-medium transition hover:bg-base-200 md:mr-2"
+                className="rounded-xl border border-base-300 px-3 py-1.5 text-xs md:text-sm cursor-pointer font-medium transition hover:bg-base-200"
               >
                 Logout
               </button>
@@ -116,14 +123,14 @@ const Navbar = () => {
             <>
               <Link
                 href="/login"
-                className="rounded-xl md:border bg-primary px-2 py-2 text-md font-semibold text-primary-content transition hover:opacity-70 md:mr-2"
+                className="rounded-xl border border-transparent bg-primary px-3 py-1.5 text-sm font-semibold text-primary-content transition hover:opacity-70"
               >
                 Login
               </Link>
 
               <Link
                 href="/signup"
-                className="rounded-xl md:border bg-primary px-2 py-2 text-md font-semibold text-primary-content transition hover:opacity-70"
+                className="rounded-xl border border-transparent bg-primary px-3 py-1.5 text-sm font-semibold text-primary-content transition hover:opacity-70"
               >
                 Get Started
               </Link>
