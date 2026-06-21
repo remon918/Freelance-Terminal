@@ -45,12 +45,12 @@ export default function Sidebar() {
     {
       name: "Proposals",
       icon: FileText,
-      href: "/dashboard/proposals",
+      href: "/client/proposals",
     },
     {
       name: "Payments",
       icon: Wallet,
-      href: "/dashboard/payments",
+      href: "/client/payments",
     },
   ];
 

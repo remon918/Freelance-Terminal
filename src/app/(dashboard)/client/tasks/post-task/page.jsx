@@ -1,6 +1,6 @@
 "use client";
 
-import { createTask } from "@/lib/auctions/tasks";
+import { createTask } from "@/lib/actions/tasks";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -8,13 +8,25 @@ import toast from "react-hot-toast";
 
 const TaskPostingPage = () => {
   const { data: session } = authClient.useSession();
-  console.log(session)
+  // console.log(session);
   const router = useRouter();
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const formData = new FormData(e.target);
+
+    const selectedDate = new Date(formData.get("deadline"));
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (selectedDate < today) {
+      toast.error("Deadline cannot be in the past");
+      return;
+    }
 
     const taskData = {
       title: formData.get("title"),
@@ -27,6 +39,7 @@ const TaskPostingPage = () => {
       client_name: session?.user?.name,
 
       status: "open",
+      proposals: [],
       deliverable_url: "",
       createdAt: new Date().toISOString(),
     };
@@ -117,6 +130,7 @@ const TaskPostingPage = () => {
               <input
                 name="deadline"
                 type="date"
+                min={tomorrow.toISOString().split("T")[0]}
                 className="input input-bordered w-full border-base-300 text-accent-foreground bg-gray-500/30"
                 required
               />

@@ -55,7 +55,7 @@ const Navbar = () => {
   return (
     // header থেকে অতিরিক্ত py-3 বাদ দিয়ে শুধুমাত্র sticky/z-index এর জন্য রাখা হয়েছে
     <header className="z-50 py-2">
-      <nav className="mx-auto flex w-[95%] items-center justify-between rounded-2xl border border-base-300 px-3 py-2.5 shadow-md lg:w-[76%]">
+      <nav className="mx-auto flex w-[95%] items-center justify-between rounded-2xl border border-gray-500/50 px-3 py-2.5 shadow-md lg:w-[76%]">
         {/* Left */}
         <div className="flex items-center gap-2">
           {/* Mobile Menu */}
@@ -114,7 +114,7 @@ const Navbar = () => {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="rounded-xl border border-base-300 px-3 py-1.5 text-xs md:text-sm cursor-pointer font-medium transition hover:bg-base-200"
+                className="rounded-xl border border-gray-500/50 px-3 py-1.5 text-xs md:text-sm cursor-pointer font-medium transition hover:bg-gray-500/30"
               >
                 Logout
               </button>

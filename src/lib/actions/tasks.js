@@ -17,3 +17,8 @@ export const createTask = async (newTaskData) => {
 
   return res.json();
 };
+
+export const getProposalDetails = async (proposalId) => {
+  const res = await fetch(`${baseUrl}/api/proposals/details/${proposalId}`, { cache: 'no-store' });
+  return res.json();
+};

@@ -8,7 +8,7 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="mt-24 border-t border-base-300">
+    <footer className="mt-24 border-t border-gray-500/50">
       <div className="mx-auto w-[95%] lg:w-[76%] py-14">
         <div className="grid gap-10 grid-cols-2 lg:grid-cols-5">
           {/* Brand */}
@@ -128,7 +128,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-base-300">
+      <div className="border-t border-gray-500/50">
         <div className="mx-auto flex w-[95%] lg:w-[76%] flex-col items-center justify-between gap-4 py-5 text-sm text-base-content/60 md:flex-row">
           <p>
             © {new Date().getFullYear()} Freelance-Terminal. All rights
