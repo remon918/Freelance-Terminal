@@ -70,12 +70,12 @@ const Banner = () => {
             {session?.user && session.user.role === "client" && (
               <>
                 <Link
-                  href="/browse-freelancer"
+                  href="/client/tasks/post-task"
                   className="btn btn-primary border px-5 py-2 rounded-md btn-md md:btn-lg transition-all
                   duration-300 hover:-translate-y-1 hover:border-primary/40
                   hover:shadow-xl font-semibold bg-teal-600 hover:bg-teal-400 flex items-center gap-2"
                 >
-                  Browse Freelancers
+                  Post a Task
                   <FiExternalLink />
                 </Link>
 

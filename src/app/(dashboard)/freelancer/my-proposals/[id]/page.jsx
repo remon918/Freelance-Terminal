@@ -126,7 +126,7 @@ const ProposalDetailsPage = ({ params }) => {
   const statusConfig = getStatusConfig(proposal.status);
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-gray-100 p-4 md:p-8 font-sans selection:bg-cyan-500/20 selection:text-cyan-300">
+    <div className="min-h-screen mt-10 md:mt-0 bg-neutral-950 text-gray-100 p-4 md:p-8 font-sans selection:bg-cyan-500/20 selection:text-cyan-300">
       <div className="max-w-4xl mx-auto space-y-6">
         
         <button

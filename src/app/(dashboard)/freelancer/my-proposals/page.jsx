@@ -86,7 +86,7 @@ const MyProposalsPage = () => {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8 font-sans">
+    <div className="max-w-5xl mx-auto mt-10 md:mt-0 px-4 md:px-8 space-y-8 font-sans">
       <div className="space-y-1">
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent">
           My Submitted Proposals

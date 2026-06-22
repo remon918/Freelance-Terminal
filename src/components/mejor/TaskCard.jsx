@@ -1,4 +1,5 @@
 import React from "react";
+import { CheckCircle2, Orbit } from "lucide-react"; // আইকনগুলো ইমপোর্ট করা হলো
 
 const TaskCard = ({ task }) => {
   const formattedDate = new Date(task.deadline).toLocaleDateString("en-US", {
@@ -7,10 +8,11 @@ const TaskCard = ({ task }) => {
     year: "numeric",
   });
 
-  // 🔥 শুধু "Rejected" বাদে বাকি প্রপোজালগুলো ফিল্টার করে কাউন্ট বের করা হচ্ছে
   const activeProposalsCount = task.proposals && Array.isArray(task.proposals)
-    ? task.proposals.filter(p => p.status !== "Rejected").length
+    ? task.proposals.filter(p => p.status?.toLowerCase() !== "rejected").length
     : 0;
+
+  const isCompleted = task.status?.toLowerCase() === "completed";
 
   return (
     <div
@@ -19,9 +21,23 @@ const TaskCard = ({ task }) => {
                 hover:border-teal-400/40
                 hover:shadow-[0_0_35px_rgba(45,212,191,0.15)] hover:text-teal-400 cursor-pointer"
     >
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-4">
         <h2 className="font-bold text-xl">{task.title}</h2>
-        <button className="btn text-green-600 btn-sm">{task.status}</button>
+        
+        <span
+          className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-xl border flex items-center gap-1.5 backdrop-blur-md transition-all whitespace-nowrap ${
+            isCompleted
+              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+              : "bg-cyan-500/10 text-cyan-400 border-cyan-500/20"
+          }`}
+        >
+          {isCompleted ? (
+            <CheckCircle2 size={14} />
+          ) : (
+            <Orbit size={14} className="animate-spin" style={{ animationDuration: '3s' }} />
+          )}
+          {task.status}
+        </span>
       </div>
 
       <p className="text-gray-500 mt-2">{task.description}</p>
@@ -35,8 +51,6 @@ const TaskCard = ({ task }) => {
           <p>{formattedDate}</p>
         </span>
       </div>
-
-      {/* 🔥 এখানে আমাদের নতুন ফিল্টার্ড কাউন্ট ভেরিয়েবলটি বসিয়ে দেওয়া হলো */}
       <div className="text-right mt-4 text-sm text-gray-500">
         Proposals {activeProposalsCount}
       </div>
