@@ -37,11 +37,12 @@ const FreelancerEarningsPage = () => {
     return () => cancelAnimationFrame(handle);
   }, []);
 
-  // ডাটা ফেচিং ইফেক্ট
+
   useEffect(() => {
     if (!freelancerEmail) {
       return;
     }
+    
 
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
