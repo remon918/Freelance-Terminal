@@ -13,10 +13,11 @@ import {
   User,
   Layers,
   ArrowUpRight,
+  Loader2,
 } from "lucide-react";
 import { getMyTasks } from "@/lib/api/tasks";
 import RejectTaskModal from "@/components/minor/RejectTaskModal";
-// 💳 নতুন পেমেন্ট গেটওয়ে কম্পোনেন্টটি ইম্পোর্ট করলাম (নিচে এই ফাইলটির কোড দেওয়া আছে)
+// 💳 নতুন পেমেন্ট গেটওয়ে কম্পোনেন্টটি ইম্পোর্ট করলাম (নিচে এই ফাইলটির কোড দেওয়া আছে)
 import SecureCheckoutView from "@/components/minor/SecureCheckoutView";
 
 const ManageProposalsPage = () => {
@@ -54,7 +55,7 @@ const ManageProposalsPage = () => {
     fetchProposals();
   }, [session?.user?.id]);
 
-  // প্রপোজাল Accept/Reject হ্যান্ডলার (পেমেন্ট সাকসেস হওয়ার পর এটা কল হবে)
+  // প্রপোজাল Accept/Reject হ্যান্ডলার (পেমেন্ট সাকসেস হওয়ার পর এটা কল হবে)
   const handleProposalAction = async (taskId, proposalId, action) => {
     try {
       if (action === "Reject") {
@@ -139,7 +140,7 @@ const ManageProposalsPage = () => {
     await handleProposalAction(taskId, proposalId, "Reject");
   };
 
-  // 💳 Accept Pitch বাটনে ক্লিক করলে সরাসরি এপিআই কল না হয়ে এই ফাংশনটি রান হবে
+  // 💳 Accept Pitch বাটনে ক্লিক করলে সরাসরি এপিআই কল না হয়ে এই ফাংশনটি রান হবে
   const handleAcceptPitchClick = (proposal) => {
     setSelectedProposalData(proposal);
     setShowCheckout(true);
@@ -166,12 +167,12 @@ const ManageProposalsPage = () => {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <span className="loading loading-spinner loading-lg text-cyan-400"></span>
+        <Loader2 className="w-10 h-10 animate-spin text-cyan-500" />
       </div>
     );
   }
 
-  // 💳 কন্ডিশনাল রেন্ডারিং: যদি showCheckout ট্রু হয়, তবে স্ট্রাইপ পেমেন্ট গেটওয়ে স্ক্রিন দেখাবে
+  // 💳 কন্ডিশনাল রেন্ডারিং: যদি showCheckout ট্রু হয়, তবে স্ট্রাইপ পেমেন্ট গেটওয়ে স্ক্রিন দেখাবে
   if (showCheckout && selectedProposalData) {
     return (
       <SecureCheckoutView
@@ -181,7 +182,7 @@ const ManageProposalsPage = () => {
           setSelectedProposalData(null);
         }}
         onPaymentSuccess={async () => {
-          // পেমেন্ট গেটওয়ে থেকে পেমেন্ট কনফার্ম হলে এই হ্যান্ডলার ব্যাকএন্ড এক্সেপ্ট অ্যাকশনটি কল করবে
+          // পেমেন্ট গেটওয়ে থেকে পেমেন্ট কনফার্ম হলে এই হ্যান্ডলার ব্যাকএন্ড এক্সেপ্ট অ্যাকশনটি কল করবে
           await handleProposalAction(
             selectedProposalData.taskId,
             selectedProposalData.proposalId,
@@ -193,14 +194,14 @@ const ManageProposalsPage = () => {
   }
 
   return (
-    <div className="mx-auto max-w-6xl p-4 md:p-8 text-gray-100 min-h-screen">
+    <div className="mx-auto max-w-6xl px-4 mt-10 md:mt-0 md:px-8 text-inherit font-sans min-h-screen selection:bg-cyan-500/20 selection:text-cyan-500">
       {/* হেডার সেকশন */}
-      <div className="relative mb-10 p-6 rounded-3xl overflow-hidden bg-linear-to-r from-neutral-800/80 via-neutral-800/70 to-cyan-950/40 border border-neutral-800 shadow-xl">
+      <div className="relative mb-10 p-6 rounded-3xl overflow-hidden bg-current/5 border border-current/10 shadow-xl backdrop-blur-md">
         <div className="absolute top-0 right-0 -mt-6 -mr-6 w-36 h-36 bg-cyan-500/10 rounded-full blur-3xl"></div>
-        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight bg-linear-to-r from-white via-gray-200 to-cyan-400 bg-clip-text text-transparent">
+        <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-inherit">
           Manage Proposals
         </h1>
-        <p className="mt-2 text-sm text-gray-400">
+        <p className="mt-2 text-sm opacity-60">
           Review, filter, and respond to incoming pitches from global freelancers.
         </p>
       </div>
@@ -211,10 +212,10 @@ const ManageProposalsPage = () => {
           <button
             key={status}
             onClick={() => setFilterStatus(status)}
-            className={`px-5 py-2 text-xs font-semibold rounded-xl transition-all duration-300 cursor-pointer border ${
+            className={`px-5 py-2 text-xs font-bold rounded-xl transition duration-300 cursor-pointer border ${
               filterStatus === status
-                ? "bg-cyan-500 text-black border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.25)]"
-                : "bg-neutral-900 text-gray-400 border-neutral-800 hover:border-neutral-700 hover:text-white"
+                ? "bg-cyan-500 text-zinc-950 border-cyan-400 shadow-[0_4px_12px_rgba(6,182,212,0.25)]"
+                : "bg-current/5 text-inherit border-current/10 opacity-70 hover:opacity-100"
             }`}
           >
             {status} (
@@ -228,9 +229,9 @@ const ManageProposalsPage = () => {
 
       {/* প্রপোজাল লিস্ট */}
       {filteredProposals.length === 0 ? (
-        <div className="text-center p-12 border border-dashed border-neutral-800 rounded-3xl bg-neutral-900/50">
-          <Layers className="mx-auto text-gray-600 mb-3" size={40} />
-          <p className="text-gray-400 font-medium">
+        <div className="text-center p-16 border border-dashed border-current/10 rounded-3xl bg-current/5">
+          <Layers className="mx-auto opacity-30 mb-3" size={40} />
+          <p className="opacity-50 font-medium text-sm italic">
             No proposals found matching {filterStatus}
           </p>
         </div>
@@ -244,15 +245,15 @@ const ManageProposalsPage = () => {
             return (
               <div
                 key={proposal.proposalId}
-                className="group relative border border-neutral-800 hover:border-cyan-500/30 rounded-2xl p-5 md:p-6 bg-neutral-900/60 backdrop-blur-md transition-all duration-300 hover:shadow-[0_0_30px_rgba(34,211,238,0.05)]"
+                className="group relative border border-current/10 hover:border-cyan-500/30 rounded-2xl p-5 md:p-6 bg-current/5 backdrop-blur-md transition-all duration-300 hover:shadow-[0_8px_30px_rgba(6,182,212,0.03)]"
               >
                 {/* কার্ডের উপরের সেকশন */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-4 border-b border-neutral-800/60">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-4 border-b border-current/5">
                   <div>
-                    <span className="text-[10px] uppercase font-bold tracking-wider text-cyan-400 flex items-center gap-1 mb-1">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-cyan-500 flex items-center gap-1 mb-1">
                       Project Base <ArrowUpRight size={12} />
                     </span>
-                    <h2 className="font-bold text-lg text-white group-hover:text-cyan-400 transition-colors duration-300">
+                    <h2 className="font-extrabold text-lg text-inherit group-hover:text-cyan-500 transition-colors duration-300">
                       {proposal.taskTitle}
                     </h2>
                   </div>
@@ -261,10 +262,10 @@ const ManageProposalsPage = () => {
                   <span
                     className={`self-start md:self-center px-4 py-1 rounded-xl text-xs font-bold border flex items-center gap-1.5 backdrop-blur-md ${
                       isAccepted
-                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                        ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                         : isRejected
-                          ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
-                          : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                          ? "bg-rose-500/10 text-rose-500 border-rose-500/20"
+                          : "bg-amber-500/10 text-amber-500 border-amber-500/20"
                     }`}
                   >
                     {isAccepted && <CheckCircle size={13} />}
@@ -275,13 +276,13 @@ const ManageProposalsPage = () => {
                 </div>
 
                 {/* ফ্রিল্যান্সার প্রোফাইল স্ট্রিপ */}
-                <div className="flex items-center gap-3 mb-4 bg-neutral-950/40 p-3 rounded-xl border border-neutral-800/40">
-                  <div className="w-9 h-9 rounded-xl bg-linear-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-black font-bold">
+                <div className="flex items-center gap-3 mb-4 bg-current/5 p-3 rounded-xl border border-current/5">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-zinc-950 font-bold">
                     <User size={16} />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-400">Proposal submitted by</p>
-                    <p className="text-sm font-semibold text-gray-200">
+                    <p className="text-xs opacity-50">Proposal submitted by</p>
+                    <p className="text-sm font-bold text-inherit opacity-90">
                       {proposal.freelancerEmail}
                     </p>
                   </div>
@@ -289,24 +290,24 @@ const ManageProposalsPage = () => {
 
                 {/* কভার নোট */}
                 <div className="mb-5">
-                  <p className="text-sm text-gray-400 leading-relaxed bg-neutral-950/20 p-4 rounded-xl border border-neutral-800/30 whitespace-pre-line">
+                  <p className="text-sm opacity-70 leading-relaxed bg-current/5 p-4 rounded-xl border border-current/5 whitespace-pre-line">
                     {proposal.coverNote || "No cover note provided."}
                   </p>
                 </div>
 
                 {/* মেটাডেটা এবং অ্যাকশন বাটন সেকশন */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
-                  <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400">
-                    <div className="flex items-center gap-1 bg-neutral-800/40 px-3 py-1.5 rounded-lg border border-neutral-800">
-                      <DollarSign size={14} className="text-cyan-400" />
-                      <span className="text-gray-200 font-bold">${proposal.proposedBudget}</span>
+                  <div className="flex flex-wrap items-center gap-4 text-xs">
+                    <div className="flex items-center gap-1 bg-current/5 px-3 py-1.5 rounded-lg border border-current/10">
+                      <DollarSign size={14} className="text-cyan-500" />
+                      <span className="text-inherit font-extrabold">${proposal.proposedBudget}</span>
                     </div>
-                    <div className="flex items-center gap-1 bg-neutral-800/40 px-3 py-1.5 rounded-lg border border-neutral-800">
-                      <Clock size={14} className="text-amber-400" />
-                      <span className="text-gray-200 font-medium">{proposal.estimatedDays} Days</span>
+                    <div className="flex items-center gap-1 bg-current/5 px-3 py-1.5 rounded-lg border border-current/10">
+                      <Clock size={14} className="text-amber-500" />
+                      <span className="text-inherit font-semibold">{proposal.estimatedDays} Days</span>
                     </div>
-                    <div className="flex items-center gap-1 bg-neutral-800/40 px-3 py-1.5 rounded-lg border border-neutral-800">
-                      <Calendar size={14} className="text-gray-500" />
+                    <div className="flex items-center gap-1 bg-current/5 px-3 py-1.5 rounded-lg border border-current/10 opacity-60">
+                      <Calendar size={14} />
                       <span>
                         {new Date(proposal.createdAt).toLocaleDateString("en-US", {
                           month: "short", day: "numeric", year: "numeric",
@@ -320,7 +321,7 @@ const ManageProposalsPage = () => {
                     <div className="flex items-center gap-2 sm:justify-end w-full sm:w-auto">
                       <button
                         onClick={() => handleRejectClick(proposal.taskId, proposal.proposalId)}
-                        className="flex-1 sm:flex-none px-4 py-2 bg-neutral-800 hover:bg-rose-950/30 border border-neutral-700 hover:border-rose-900/50 text-rose-400 font-semibold text-xs rounded-xl transition-all duration-300 cursor-pointer"
+                        className="flex-1 sm:flex-none px-4 py-2 bg-current/5 hover:bg-rose-500/10 border border-current/10 hover:border-rose-500/30 text-rose-500 font-bold text-xs rounded-xl transition duration-300 cursor-pointer"
                       >
                         Reject
                       </button>
@@ -328,7 +329,7 @@ const ManageProposalsPage = () => {
                       {/* 💳 বাটন ক্লিক হ্যান্ডলার পরিবর্তন করে ম্যাপ করা প্রপোজাল অবজেক্টটি পাস করলাম */}
                       <button
                         onClick={() => handleAcceptPitchClick(proposal)}
-                        className="flex-1 sm:flex-none px-5 py-2 bg-linear-to-r from-cyan-400 to-teal-400 hover:from-cyan-500 hover:to-teal-500 text-black font-bold text-xs rounded-xl shadow-[0_4px_15px_rgba(34,211,238,0.2)] hover:shadow-[0_4px_20px_rgba(34,211,238,0.4)] transition-all duration-300 cursor-pointer"
+                        className="flex-1 sm:flex-none px-5 py-2 bg-gradient-to-r from-cyan-400 to-teal-400 hover:opacity-90 text-zinc-950 font-extrabold text-xs rounded-xl shadow-[0_4px_12px_rgba(6,182,212,0.2)] transition duration-300 cursor-pointer"
                       >
                         Accept Pitch
                       </button>

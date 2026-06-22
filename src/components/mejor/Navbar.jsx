@@ -18,12 +18,18 @@ const Navbar = () => {
       ? session.user.image
       : avatar;
 
+  const getDashboardHref = (role) => {
+    if (role === "admin") return "/admin";
+    if (role === "freelancer") return "/freelancer";
+    return "/client";
+  };
+
   const menus = session?.user
     ? [
         { name: "Home", href: "/" },
         {
           name: "Dashboard",
-          href: session.user.role === "freelancer" ? "/freelancer" : "/client",
+          href: getDashboardHref(session.user.role),
         },
         {
           name: "Browse Tasks",
@@ -53,7 +59,7 @@ const Navbar = () => {
   };
 
   return (
-    // header থেকে অতিরিক্ত py-3 বাদ দিয়ে শুধুমাত্র sticky/z-index এর জন্য রাখা হয়েছে
+    // header থেকে অতিরিক্ত py-3 বাদ দিয়ে শুধুমাত্র sticky/z-index এর জন্য রাখা হয়েছে
     <header className="z-50 py-2">
       <nav className="mx-auto flex w-[95%] items-center justify-between rounded-2xl border border-gray-500/50 px-3 py-2.5 shadow-md lg:w-[76%]">
         {/* Left */}
@@ -63,7 +69,7 @@ const Navbar = () => {
             <DropDownMenu menus={menus} />
           </div>
 
-          {/* এখানে mb-6 এবং mt-8 বাদ দেওয়া হয়েছে, ফলে হাইট স্বাভাবিক থাকবে */}
+          {/* এখানে mb-6 এবং mt-8 বাদ দেওয়া হয়েছে, ফলে হাইট স্বাভাবিক থাকবে */}
           <Link href="/" className="flex items-center gap-3">
             {/* Desktop Logo */}
             <div className="hidden h-9 w-9 items-center justify-center rounded-xl shadow-[0_0_20px_rgba(34,211,238,.25)] md:flex">

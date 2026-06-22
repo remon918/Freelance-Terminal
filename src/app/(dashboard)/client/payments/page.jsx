@@ -55,7 +55,7 @@ const PaymentHistoryPage = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-4 mt-12 md:mt-0 pb-10">
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 pb-6 border-b border-gray-100">
         <div>
@@ -84,7 +84,7 @@ const PaymentHistoryPage = () => {
       {payments.length === 0 ? (
         /* Empty State Card */
         <div className="bg-cyan-200/30 border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center max-w-xl mx-auto mt-10">
-          <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-5 text-gray-400">
+          <div className="w-16 h-16 bg-gray-50/20 rounded-2xl flex items-center justify-center mx-auto mb-5 text-gray-400">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"

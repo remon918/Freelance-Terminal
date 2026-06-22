@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Card, Input, Button } from "@heroui/react";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { FcGoogle } from "react-icons/fc";
 import toast from "react-hot-toast";
@@ -61,7 +61,20 @@ const LoginPage = () => {
   ];
 
   return (
-    <div className="flex items-center justify-center px-3 py-6">
+    <div className="">
+      <div className="mb-4 mt-5 ml-2 md:ml-50 lg:ml-100 flex justify-start">
+        <Link href="/">
+          <Button
+            variant="light"
+            size="sm"
+            className="flex items-center gap-2 font-medium transition-colors"
+          >
+            <ArrowLeft size={16} />
+            Back to Home
+          </Button>
+        </Link>
+      </div>
+      <div className="flex items-center justify-center px-3 py-6">
       <div className="w-full max-w-lg rounded-md border border-gray-200 shadow-md">
         <div className="p-5 md:p-6">
           <div className="text-center mb-6">
@@ -186,6 +199,7 @@ const LoginPage = () => {
           </form>
         </div>
       </div>
+    </div>
     </div>
   );
 };

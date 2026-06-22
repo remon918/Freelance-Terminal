@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   LayoutGrid,
-  User,
   ClipboardList,
   PlusCircle,
   FileText,
@@ -19,6 +18,9 @@ import {
   BriefcaseBusiness,
   DollarSign,
   UserRoundPen,
+  Users,
+  Briefcase,
+  LogOut, // 👈 Logout আইকন ইমপোর্ট করা হলো
 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
@@ -86,17 +88,53 @@ export default function Sidebar() {
       href: "/freelancer/earnings",
     },
   ];
+
+  const adminLinks = [
+    {
+      name: "Overview",
+      icon: LayoutGrid,
+      href: "/admin",
+    },
+    {
+      name: "Users",
+      icon: Users,
+      href: "/admin/users",
+    },
+    {
+      name: "Tasks",
+      icon: Briefcase,
+      href: "/admin/tasks",
+    },
+    {
+      name: "Payments",
+      icon: DollarSign,
+      href: "/admin/payments",
+    },
+  ];
+
   const linksMap = {
     client: clientLinks,
     freelancer: freelancerLinks,
+    admin: adminLinks,
   };
 
   const role = session?.user?.role || "client";
 
-  const menuItems = linksMap[role];
+  const menuItems = linksMap[role] || clientLinks;
 
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+
+  // ⚡ লগআউট ফাংশন
+  const handleLogout = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          window.location.href = "/"; // লগআউট সফল হলে হোম পেজে রিডাইরেক্ট করবে
+        },
+      },
+    });
+  };
 
   return (
     <>
@@ -191,7 +229,7 @@ export default function Sidebar() {
                     className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all ${
                       isActive
                         ? "bg-cyan-500/15 text-cyan-500"
-                        : "  group-hover:bg-cyan-500/10 group-hover:text-cyan-400"
+                        : "   group-hover:bg-cyan-500/10 group-hover:text-cyan-400"
                     }`}
                   >
                     <Icon size={18} />
@@ -235,7 +273,8 @@ export default function Sidebar() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-white/10 bg-white/5 p-2.5 backdrop-blur-xl">
+          {/* User Profile & Logout Wrapper */}
+          <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 p-2.5 backdrop-blur-xl">
             <div className="flex items-center gap-3">
               <Image
                 src={
@@ -250,13 +289,24 @@ export default function Sidebar() {
               />
 
               <div>
-                <h4 className="text-sm font-semibold">{session?.user?.name}</h4>
+                <h4 className="text-sm font-semibold truncate max-w-[110px]">
+                  {session?.user?.name}
+                </h4>
 
-                <p className="text-[11px] text-cyan-400 font-semibold">
+                <p className="text-[11px] text-cyan-400 font-semibold capitalize">
                   {session?.user?.role}
                 </p>
               </div>
             </div>
+
+            {/* 🚪 Logout Button */}
+            <button
+              onClick={handleLogout}
+              title="Logout"
+              className="p-2 text-slate-400 hover:text-cyan-400 hover:bg-white/5 rounded-lg transition-all"
+            >
+              <LogOut size={18} />
+            </button>
           </div>
         </div>
       </aside>

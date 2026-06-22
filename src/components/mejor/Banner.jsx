@@ -105,7 +105,7 @@ const Banner = () => {
                 </Link>
 
                 <Link
-                  href="/freelancer/profile" // Change this route to match your profile routing structure
+                  href="/freelancer/profile"
                   className="btn btn-outline border px-5 py-2 rounded btn-md md:btn-lg 
                   transition-all duration-300 hover:-translate-y-1 hover:border-primary/40
                   hover:shadow-xl font-semibold flex items-center gap-2"
@@ -116,8 +116,8 @@ const Banner = () => {
               </>
             )}
 
-            {/* 3. Guest / No User Buttons */}
-            {!session?.user && (
+            {/* 🔥 3. Guest (No User) OR Admin Role Buttons */}
+            {(!session?.user || session.user.role === "admin") && (
               <>
                 <Link
                   href="/browse-task"
