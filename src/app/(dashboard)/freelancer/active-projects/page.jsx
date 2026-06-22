@@ -12,7 +12,6 @@ export default function ActiveProjectsPage() {
   const [isFetching, setIsFetching] = useState(false); // শুধু ডাটা ফেচিং ট্র্যাক করার জন্য
   const [selectedTask, setSelectedTask] = useState(null);
 
-  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -23,6 +22,7 @@ export default function ActiveProjectsPage() {
       setIsFetching(true);
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
       
+
       try {
         const res = await fetch(`${apiUrl}/api/freelancer-projects?email=${session.user.email}`);
         const data = await res.json();
@@ -37,6 +37,7 @@ export default function ActiveProjectsPage() {
       }
     };
 
+
     fetchProjects();
   }, [session, refreshTrigger]);
 
@@ -50,6 +51,8 @@ export default function ActiveProjectsPage() {
       </div>
     );
   }
+
+  
 
   if (!session) {
     return (
