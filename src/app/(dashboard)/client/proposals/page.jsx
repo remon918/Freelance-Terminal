@@ -61,6 +61,7 @@ const ManageProposalsPage = () => {
       if (action === "Reject") {
         setRejectLoading(true);
       }
+      
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/proposals/${taskId}/${proposalId}`,

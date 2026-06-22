@@ -13,7 +13,6 @@ const UltimatePremiumErrorPage = () => {
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#0A0F11] px-4 font-sans text-white">
       
-      {/* 🌌 ১. ইউনিক প্রিমিয়াম ব্যাকগ্রাউন্ড: সাইবার গ্রিড প্যাটার্ন */}
       <div 
         className="absolute inset-0 opacity-[0.07] pointer-events-none" 
         style={{
