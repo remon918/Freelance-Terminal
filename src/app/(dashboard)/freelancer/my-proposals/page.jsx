@@ -116,11 +116,14 @@ const MyProposalsPage = () => {
                   className="absolute inset-0 z-10"
                 />
 
+
                 <div className="absolute top-5 right-5 opacity-0 scale-75 group-hover:opacity-60 group-hover:scale-100 transition duration-300 pointer-events-none z-20 w-8 h-8 rounded-lg bg-current/5 border border-current/10 flex items-center justify-center">
                   <Link2 className="w-4 h-4 text-inherit" />
                 </div>
 
-                {/* হোভার ব্যাকগ্রাউন্ড গ্লো ইফেক্ট */}
+
+                
+                
                 <div className="absolute -inset-px bg-linear-to-r from-transparent via-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-700 pointer-events-none" />
 
                 <div className="space-y-4 relative z-0">
