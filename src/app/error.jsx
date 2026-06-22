@@ -5,6 +5,8 @@ import { Button } from "@heroui/react";
 import { ArrowLeft, Home, Layers, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 
+
+
 const UltimatePremiumErrorPage = () => {
   const handleRefresh = () => {
     window.location.reload();

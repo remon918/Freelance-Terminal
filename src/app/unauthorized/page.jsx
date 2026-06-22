@@ -5,6 +5,8 @@ const UnAuthorizedPage = () => {
   // কর্নার রোটেশনগুলোর জন্য একটি অ্যারে যাতে SVG ডুপ্লিকেট করতে না হয়
   const corners = ['top-[-1px] left-[-1px]', 'top-[-1px] right-[-1px] rotate-90', 'bottom-[-1px] right-[-1px] rotate-180', 'bottom-[-1px] left-[-1px] rotate-270'];
 
+  
+
   return (
     <div className="py-3 px-0 font-['Inter'] font-light">
       {/* গ্লোবাল অ্যানিমেশন ইনজেকশন (যদি গ্লোবাল সিএসএস ফাইলে না রাখতে চান) */}
