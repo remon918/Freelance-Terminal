@@ -20,7 +20,7 @@ const SecureCheckoutView = ({ proposal, onBack }) => {
         {/* বাম পাশ - Total Payable */}
         <div className="lg:col-span-5 space-y-8 lg:sticky lg:top-8">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 to-teal-400 flex items-center justify-center text-zinc-950 font-black text-xs tracking-wider shadow-[0_2px_8px_rgba(6,182,212,0.2)]">
+            <div className="w-9 h-9 rounded-xl bg-linear-to-br from-cyan-400 to-teal-400 flex items-center justify-center text-zinc-950 font-black text-xs tracking-wider shadow-[0_2px_8px_rgba(6,182,212,0.2)]">
               FT
             </div>
             <div>
@@ -83,7 +83,7 @@ const SecureCheckoutView = ({ proposal, onBack }) => {
               
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-cyan-400 to-teal-400 hover:opacity-95 text-zinc-950 font-extrabold py-4 px-4 rounded-xl text-xs uppercase tracking-widest transition-all active:scale-[0.99] shadow-[0_4px_20px_rgba(6,182,212,0.25)] flex items-center justify-center gap-2 cursor-pointer"
+                className="w-full bg-linear-to-r from-cyan-400 to-teal-400 hover:opacity-95 text-zinc-950 font-extrabold py-4 px-4 rounded-xl text-xs uppercase tracking-widest transition-all active:scale-[0.99] shadow-[0_4px_20px_rgba(6,182,212,0.25)] flex items-center justify-center gap-2 cursor-pointer"
               >
                 <Lock className="w-3.5 h-3.5 stroke-[2.5]" />
                 <span>Authorize & Pay ${proposal.proposedBudget}</span>

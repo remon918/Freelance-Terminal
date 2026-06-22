@@ -333,7 +333,7 @@ const MyTaskDetailsPage = () => {
                         <button
                           type="button"
                           onClick={() => handleAcceptPitchClick(proposal)}
-                          className="px-4 py-1.5 bg-gradient-to-r from-cyan-400 to-teal-400 text-zinc-950 font-extrabold text-xs rounded-lg shadow-[0_2px_8px_rgba(6,182,212,0.15)] hover:opacity-90 transition cursor-pointer"
+                          className="px-4 py-1.5 bg-linear-to-r from-cyan-400 to-teal-400 text-zinc-950 font-extrabold text-xs rounded-lg shadow-[0_2px_8px_rgba(6,182,212,0.15)] hover:opacity-90 transition cursor-pointer"
                         >
                           Accept
                         </button>

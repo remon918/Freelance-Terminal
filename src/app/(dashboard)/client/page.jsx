@@ -187,7 +187,7 @@ export default function ClientDashboard() {
                   const isComp = project.status?.toLowerCase() === "completed";
                   return (
                     <tr key={project._id} className="hover:bg-current/5 transition-colors">
-                      <td className="p-4 font-bold text-inherit max-w-[200px] truncate">
+                      <td className="p-4 font-bold text-inherit max-w-50 truncate">
                         {project.title}
                       </td>
                       <td className="p-4">

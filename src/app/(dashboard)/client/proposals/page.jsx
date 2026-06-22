@@ -277,7 +277,7 @@ const ManageProposalsPage = () => {
 
                 {/* ফ্রিল্যান্সার প্রোফাইল স্ট্রিপ */}
                 <div className="flex items-center gap-3 mb-4 bg-current/5 p-3 rounded-xl border border-current/5">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-zinc-950 font-bold">
+                  <div className="w-9 h-9 rounded-xl bg-linear-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-zinc-950 font-bold">
                     <User size={16} />
                   </div>
                   <div>
@@ -329,7 +329,7 @@ const ManageProposalsPage = () => {
                       {/* 💳 বাটন ক্লিক হ্যান্ডলার পরিবর্তন করে ম্যাপ করা প্রপোজাল অবজেক্টটি পাস করলাম */}
                       <button
                         onClick={() => handleAcceptPitchClick(proposal)}
-                        className="flex-1 sm:flex-none px-5 py-2 bg-gradient-to-r from-cyan-400 to-teal-400 hover:opacity-90 text-zinc-950 font-extrabold text-xs rounded-xl shadow-[0_4px_12px_rgba(6,182,212,0.2)] transition duration-300 cursor-pointer"
+                        className="flex-1 sm:flex-none px-5 py-2 bg-linear-to-r from-cyan-400 to-teal-400 hover:opacity-90 text-zinc-950 font-extrabold text-xs rounded-xl shadow-[0_4px_12px_rgba(6,182,212,0.2)] transition duration-300 cursor-pointer"
                       >
                         Accept Pitch
                       </button>

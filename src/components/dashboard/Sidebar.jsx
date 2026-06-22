@@ -289,7 +289,7 @@ export default function Sidebar() {
               />
 
               <div>
-                <h4 className="text-sm font-semibold truncate max-w-[110px]">
+                <h4 className="text-sm font-semibold truncate max-w-27.5">
                   {session?.user?.name}
                 </h4>
 

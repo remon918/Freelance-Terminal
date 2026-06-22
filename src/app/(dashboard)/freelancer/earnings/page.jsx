@@ -95,7 +95,7 @@ const FreelancerEarningsPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* টোটাল আর্নড কার্ড */}
         <div className="bg-current/5 border border-current/10 hover:border-cyan-500/30 rounded-2xl p-6 shadow-sm transition-all duration-300 flex justify-between items-center group relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-500 to-emerald-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
+          <div className="absolute top-0 left-0 w-full h-0.75 bg-linear-to-r from-cyan-500 to-emerald-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
           <div className="space-y-1">
             <span className="text-xs font-bold opacity-50 uppercase tracking-wider">
               Total Earned
@@ -114,7 +114,7 @@ const FreelancerEarningsPage = () => {
 
         {/* অ্যাভারেজ পার টাস্ক কার্ড */}
         <div className="bg-current/5 border border-current/10 hover:border-cyan-500/30 rounded-2xl p-6 shadow-sm transition-all duration-300 flex justify-between items-center group relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-cyan-500 to-emerald-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
+          <div className="absolute top-0 left-0 w-full h-0.75 bg-linear-to-r from-cyan-500 to-emerald-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
           <div className="space-y-1">
             <span className="text-xs font-bold opacity-50 uppercase tracking-wider">
               Average Per Task
@@ -251,7 +251,7 @@ const FreelancerEarningsPage = () => {
                         : "N/A"}
                     </td>
                     <td
-                      className="py-4 px-6 font-mono opacity-40 max-w-[150px] truncate"
+                      className="py-4 px-6 font-mono opacity-40 max-w-37.5 truncate"
                       title={tx.sessionId}
                     >
                       {tx.sessionId || "N/A"}

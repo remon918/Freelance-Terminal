@@ -52,7 +52,7 @@ export default function SubmitDeliverableModal({ isOpen, onClose, task, onSubmis
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-md p-4 text-inherit font-sans">
       {/* 🌟 bg-zinc-900 বদলে প্রজেক্টের থিম-অ্যাডাপ্টিভ ব্যাকগ্রাউন্ড দেওয়া হলো */}
-      <div className="w-full max-w-[550px] rounded-2xl border border-current/10 bg-current/5 p-6 shadow-2xl backdrop-blur-xl relative mx-4">
+      <div className="w-full max-w-137.5 rounded-2xl border border-current/10 bg-current/5 p-6 shadow-2xl backdrop-blur-xl relative mx-4">
         
         {/* Close Button */}
         <button 
@@ -108,7 +108,7 @@ export default function SubmitDeliverableModal({ isOpen, onClose, task, onSubmis
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-400 to-teal-400 text-zinc-950 font-extrabold shadow-[0_4px_14px_rgba(6,182,212,0.3)] hover:opacity-90 active:scale-[0.98] transition-all text-sm cursor-pointer disabled:opacity-50"
+              className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-linear-to-r from-cyan-400 to-teal-400 text-zinc-950 font-extrabold shadow-[0_4px_14px_rgba(6,182,212,0.3)] hover:opacity-90 active:scale-[0.98] transition-all text-sm cursor-pointer disabled:opacity-50"
             >
               {loading ? (
                 <>

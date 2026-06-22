@@ -192,7 +192,7 @@ export default function FreelancerDashboard() {
                   <tbody className="divide-y divide-current/5">
                     {recentActiveProjects.map((project) => (
                       <tr key={project._id} className="hover:bg-current/5 transition-colors">
-                        <td className="px-4 py-3 font-medium text-inherit max-w-[180px] truncate">{project.title}</td>
+                        <td className="px-4 py-3 font-medium text-inherit max-w-45 truncate">{project.title}</td>
                         <td className="px-4 py-3 font-semibold text-inherit">${project.budget}</td>
                         <td className="px-4 py-3">
                           <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full border bg-cyan-500/10 text-cyan-500 border-cyan-500/20 inline-flex items-center gap-1">
@@ -241,7 +241,7 @@ export default function FreelancerDashboard() {
                   <tbody className="divide-y divide-current/5">
                     {pendingProposals.map((item) => (
                       <tr key={item.proposalId} className="hover:bg-current/5 transition-colors">
-                        <td className="px-4 py-3 font-medium text-inherit max-w-[180px] truncate">{item.taskTitle}</td>
+                        <td className="px-4 py-3 font-medium text-inherit max-w-45 truncate">{item.taskTitle}</td>
                         <td className="px-4 py-3 font-semibold text-inherit">${item.proposedBudget}</td>
                         <td className="px-4 py-3 text-right">
                           <Link

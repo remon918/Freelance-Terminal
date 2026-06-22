@@ -197,7 +197,7 @@ export default function TaskManagement() {
                   return (
                     <tr key={task._id} className="hover:bg-current/5 transition-colors">
                       {/* Title */}
-                      <td className="px-6 py-4 font-medium text-inherit max-w-[200px] truncate">
+                      <td className="px-6 py-4 font-medium text-inherit max-w-50 truncate">
                         {task.title || "Untitled Task"}
                       </td>
 

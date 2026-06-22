@@ -69,7 +69,7 @@ const PaymentHistoryPage = () => {
 
         {/* Total Spend Premium Badge */}
         {payments.length > 0 && (
-          <div className="mt-4 md:mt-0 bg-gradient-to-r from-cyan-600 to-teal-600 text-white px-6 py-4 rounded-2xl shadow-xl shadow-indigo-100 flex flex-col items-end">
+          <div className="mt-4 md:mt-0 bg-linear-to-r from-cyan-600 to-teal-600 text-white px-6 py-4 rounded-2xl shadow-xl shadow-indigo-100 flex flex-col items-end">
             <span className="text-xs uppercase tracking-wider text-indigo-100 font-semibold">
               Total Funds Spent
             </span>
@@ -116,7 +116,7 @@ const PaymentHistoryPage = () => {
               key={payment._id}
               className="bg-white/30 border border-gray-100 hover:border-indigo-100 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group relative overflow-hidden"
             >
-              <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-indigo-500 to-violet-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
+              <div className="absolute top-0 left-0 w-full h-0.75 bg-linear-to-r from-indigo-500 to-violet-500 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
 
               <div>
                 {/* Card Top Row */}
@@ -141,7 +141,7 @@ const PaymentHistoryPage = () => {
                 <div className="flex justify-between">
                   <span>Session ID:</span>
                   <span
-                    className="font-mono text-gray-600 max-w-[120px] truncate"
+                    className="font-mono text-gray-600 max-w-30 truncate"
                     title={payment.sessionId}
                   >
                     {payment.sessionId}

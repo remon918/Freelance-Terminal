@@ -154,7 +154,7 @@ const TasksPage = () => {
 
             {/* ২. টাস্ক গ্রিড / লোডার ডিসপ্লে */}
             {loading ? (
-                <div className="flex justify-center items-center min-h-[300px]">
+                <div className="flex justify-center items-center min-h-75">
                     <Loader2 className="w-8 h-8 animate-spin text-cyan-500" />
                 </div>
             ) : tasks.length === 0 ? (

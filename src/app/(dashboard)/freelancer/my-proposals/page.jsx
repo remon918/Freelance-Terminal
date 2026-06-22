@@ -1,26 +1,26 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { authClient } from "@/lib/auth-client"; 
+import { authClient } from "@/lib/auth-client";
 import { getFreelancerProposals } from "@/lib/actions/actions";
-import { 
-  Calendar, 
-  DollarSign, 
-  Clock, 
-  FileText, 
-  CheckCircle2, 
-  XCircle, 
-  AlertCircle, 
-  ArrowUpRight, 
+import {
+  Calendar,
+  DollarSign,
+  Clock,
+  FileText,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  ArrowUpRight,
   Link2,
-  Loader2
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 
 const MyProposalsPage = () => {
   const { data: session, isPending: authLoading } = authClient.useSession();
   const [proposals, setProposals] = useState([]);
-  const [dataLoading, setDataLoading] = useState(false); 
+  const [dataLoading, setDataLoading] = useState(false);
 
   useEffect(() => {
     if (authLoading || !session?.user?.email) return;
@@ -33,7 +33,7 @@ const MyProposalsPage = () => {
       } catch (error) {
         console.error("Failed to fetch proposals:", error);
       } finally {
-        setDataLoading(false); 
+        setDataLoading(false);
       }
     };
 
@@ -81,21 +81,23 @@ const MyProposalsPage = () => {
     return (
       <div className="text-center py-16 border border-current/10 bg-current/5 rounded-2xl max-w-md mx-auto mt-10 p-6">
         <AlertCircle className="w-8 h-8 mx-auto mb-3 text-amber-500" />
-        <p className="opacity-60 text-sm font-medium">Please login to view your submitted proposals.</p>
+        <p className="opacity-60 text-sm font-medium">
+          Please login to view your submitted proposals.
+        </p>
       </div>
     );
   }
 
   return (
     <div className="max-w-5xl mx-auto mt-10 md:mt-0 px-4 md:px-8 space-y-8 font-sans text-inherit">
-      
       {/* হেডার সেকশন */}
       <div className="space-y-1">
         <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-inherit">
           My Submitted Proposals
         </h1>
         <p className="opacity-60 text-sm">
-          Track your bids, monitor responses, and manage client responses. Total: {proposals.length}
+          Track your bids, monitor responses, and manage client responses.
+          Total: {proposals.length}
         </p>
       </div>
 
@@ -109,21 +111,19 @@ const MyProposalsPage = () => {
                 className="group relative border border-current/10 bg-current/5 backdrop-blur-md rounded-2xl p-5 md:p-6 transition duration-300 hover:border-current/20 flex flex-col justify-between overflow-hidden"
               >
                 {/* কার্ডের ক্লিকেবল লিংক */}
-                <Link 
-                  href={`/freelancer/my-proposals/${item.proposalId}`} 
+                <Link
+                  href={`/freelancer/my-proposals/${item.proposalId}`}
                   className="absolute inset-0 z-10"
                 />
 
-                {/* টপ রাইট লিংক আইকন */}
-                <div className="absolute top-5 right-5 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition duration-300 pointer-events-none z-20 w-8 h-8 rounded-lg bg-current/5 border border-current/10 flex items-center justify-center opacity-60">
+                <div className="absolute top-5 right-5 opacity-0 scale-75 group-hover:opacity-60 group-hover:scale-100 transition duration-300 pointer-events-none z-20 w-8 h-8 rounded-lg bg-current/5 border border-current/10 flex items-center justify-center">
                   <Link2 className="w-4 h-4 text-inherit" />
                 </div>
 
                 {/* হোভার ব্যাকগ্রাউন্ড গ্লো ইফেক্ট */}
-                <div className="absolute -inset-px bg-gradient-to-r from-transparent via-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-700 pointer-events-none" />
+                <div className="absolute -inset-px bg-linear-to-r from-transparent via-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition duration-700 pointer-events-none" />
 
                 <div className="space-y-4 relative z-0">
-                  
                   {/* টপ কন্টেন্ট: টাইটেল ও স্ট্যাটাস ব্যাজ */}
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                     <div className="space-y-1 max-w-3xl">
@@ -133,11 +133,15 @@ const MyProposalsPage = () => {
                       </div>
                       <div className="flex items-center gap-2 text-xs opacity-60">
                         <span>Original Task Budget:</span>
-                        <span className="font-semibold text-inherit">${item.taskBudget}</span>
+                        <span className="font-semibold text-inherit">
+                          ${item.taskBudget}
+                        </span>
                       </div>
                     </div>
 
-                    <div className={`self-start flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-wider relative z-20 ${statusStyle.bg}`}>
+                    <div
+                      className={`self-start flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold uppercase tracking-wider relative z-20 ${statusStyle.bg}`}
+                    >
                       {statusStyle.icon}
                       {item.status || "Pending"}
                     </div>
@@ -146,23 +150,30 @@ const MyProposalsPage = () => {
                   {/* মেটা ইনফো গ্রিড: বিড বাজেট, টাইমলাইন ও ডেট */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 bg-current/5 border border-current/5 rounded-xl p-3 text-xs md:text-sm relative z-20">
                     <div className="space-y-0.5">
-                      <span className="opacity-50 text-[11px] block">Your Bid Budget</span>
+                      <span className="opacity-50 text-[11px] block">
+                        Your Bid Budget
+                      </span>
                       <div className="flex items-center font-bold text-emerald-500">
                         <DollarSign className="w-4 h-4 shrink-0 -ml-1" />
                         {item.proposedBudget}
                       </div>
                     </div>
-                    
+
                     <div className="space-y-0.5">
-                      <span className="opacity-50 text-[11px] block">Estimated Time</span>
+                      <span className="opacity-50 text-[11px] block">
+                        Estimated Time
+                      </span>
                       <div className="flex items-center gap-1.5 font-semibold opacity-80">
                         <Clock className="w-3.5 h-3.5 opacity-60" />
-                        {item.estimatedDays} {item.estimatedDays > 1 ? "Days" : "Day"}
+                        {item.estimatedDays}{" "}
+                        {item.estimatedDays > 1 ? "Days" : "Day"}
                       </div>
                     </div>
 
                     <div className="space-y-0.5 col-span-2 sm:col-span-1">
-                      <span className="opacity-50 text-[11px] block">Submitted On</span>
+                      <span className="opacity-50 text-[11px] block">
+                        Submitted On
+                      </span>
                       <div className="flex items-center gap-1.5 font-medium opacity-70">
                         <Calendar className="w-3.5 h-3.5 opacity-60" />
                         {formatDate(item.createdAt)}
@@ -182,7 +193,6 @@ const MyProposalsPage = () => {
                       </p>
                     </div>
                   )}
-
                 </div>
               </div>
             );
@@ -190,7 +200,9 @@ const MyProposalsPage = () => {
         </div>
       ) : (
         <div className="text-center py-16 border border-dashed border-current/10 rounded-2xl bg-current/5">
-          <p className="opacity-50 text-sm italic">You have not submitted any proposals yet.</p>
+          <p className="opacity-50 text-sm italic">
+            You have not submitted any proposals yet.
+          </p>
         </div>
       )}
     </div>

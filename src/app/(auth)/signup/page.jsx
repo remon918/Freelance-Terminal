@@ -24,69 +24,82 @@ const SignupPage = () => {
   const [passwordError, setPasswordError] = useState("");
   const [role, setRole] = useState("client");
 
+  // 🚀 গুগল সাইন-আপ/লগইন হ্যান্ডলার (রোল মেটাডেটাসহ)
   const handleGoogleSignUp = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-    });
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/", // লগইন সাকসেস হওয়ার পর হোমপেজে বা ড্যাশবোর্ডে পাঠাবে
+        newUserOptions: {
+          // গুগলের মাধ্যমে নতুন অ্যাকাউন্ট তৈরি হলে এই রোলটি ডেটাবেজে জমা হবে
+          data: {
+            role: role,
+          }
+        }
+      });
+    } catch (error) {
+      console.error("Google Auth Error:", error);
+      toast.error("Google Authentication Failed");
+    }
   };
 
   const handleSignUp = async (e) => {
-  e.preventDefault();
-  setPasswordError("");
+    e.preventDefault();
+    setPasswordError("");
 
-  const isLengthValid = password.length >= 6;
-  const hasLowercase = /[a-z]/.test(password);
-  const hasUppercase = /[A-Z]/.test(password);
+    const isLengthValid = password.length >= 6;
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
 
-  if (!isLengthValid || !hasLowercase || !hasUppercase) {
-    setPasswordError(
-      "Password must be at least 6 characters long and contain at least one uppercase letter and one lowercase letter."
-    );
-    return;
-  }
+    if (!isLengthValid || !hasLowercase || !hasUppercase) {
+      setPasswordError(
+        "Password must be at least 6 characters long and contain at least one uppercase letter and one lowercase letter."
+      );
+      return;
+    }
 
-  const formData = new FormData(e.currentTarget);
-  const baseData = Object.fromEntries(formData.entries());
+    const formData = new FormData(e.currentTarget);
+    const baseData = Object.fromEntries(formData.entries());
 
-  const payload = {
-    name: baseData.name,
-    email: baseData.email,
-    password: baseData.password,
-    image: baseData.image,
+    const payload = {
+      name: baseData.name,
+      email: baseData.email,
+      password: baseData.password,
+      image: baseData.image,
 
-    role,
+      role,
 
-    skills:
-      role === "freelancer"
-        ? baseData.skills
-        : undefined,
+      skills:
+        role === "freelancer"
+          ? baseData.skills
+          : undefined,
 
-    bio:
-      role === "freelancer"
-        ? baseData.bio
-        : undefined,
+      bio:
+        role === "freelancer"
+          ? baseData.bio
+          : undefined,
 
-    hourlyRate:
-      role === "freelancer" && baseData.hourlyRate
-        ? Number(baseData.hourlyRate)
-        : undefined,
+      hourlyRate:
+        role === "freelancer" && baseData.hourlyRate
+          ? Number(baseData.hourlyRate)
+          : undefined,
+    };
+
+    console.log("SIGNUP PAYLOAD:", payload);
+
+    const { data, error } = await authClient.signUp.email(payload);
+
+    console.log("DATA:", data);
+    console.log("ERROR:", error);
+
+    if (error) {
+      toast.error(error.message || "Signup Failed");
+      return;
+    }
+
+    toast.success("Signup Successful!");
+    window.location.href = "/";
   };
-
-  console.log("SIGNUP PAYLOAD:", payload);
-
-  const { data, error } = await authClient.signUp.email(payload);
-
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
-
-  if (error) {
-    toast.error(error.message || "Signup Failed");
-    return;
-  }
-
-  toast.success("Signup Successful!");
-  window.location.href = "/";
-};
 
   return (
     <div className="min-h-screen pb-12">

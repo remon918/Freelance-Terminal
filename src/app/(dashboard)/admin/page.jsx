@@ -319,7 +319,7 @@ export default function AdminDashboardOverview() {
               <tbody className="divide-y divide-current/5 text-sm">
                 {recentActivity.map((task) => (
                   <tr key={task._id} className="hover:bg-current/5 transition-colors">
-                    <td className="p-4 font-bold text-inherit max-w-[200px] truncate">{task.title}</td>
+                    <td className="p-4 font-bold text-inherit max-w-50 truncate">{task.title}</td>
                     <td className="p-4 font-mono text-xs opacity-60">{task.clientEmail}</td>
                     <td className="p-4">
                       <span className="bg-current/5 px-2.5 py-1 rounded-md text-xs font-medium opacity-80 border border-current/5">

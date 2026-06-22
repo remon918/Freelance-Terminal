@@ -104,7 +104,7 @@ const Navbar = () => {
             <div className="h-8 w-20 animate-pulse rounded-xl bg-base-200" />
           ) : session?.user ? (
             <>
-              <Link href="/profile" className="flex items-center">
+              <button className="flex items-center">
                 <Image
                   src={userImage}
                   alt="User"
@@ -115,7 +115,7 @@ const Navbar = () => {
                     e.currentTarget.src = avatar.src || avatar;
                   }}
                 />
-              </Link>
+              </button>
 
               <button
                 type="button"
