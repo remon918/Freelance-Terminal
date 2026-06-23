@@ -1,3 +1,5 @@
+import { authClient } from "../auth-client";
+
 export const updateTask = async (id, taskData) => {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/tasks/${id}`,
@@ -62,8 +64,17 @@ export const rejectProposalAction = async (taskId, proposalId) => {
 // ফ্রিল্যান্সারের সব প্রপোজাল নিয়ে আসার সার্ভার অ্যাকশন
 export const getFreelancerProposals = async (email) => {
   try {
+    // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+    const { data: tokenData } = await authClient.token();
+
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/my-proposals?email=${email}`, {
-      cache: "no-store" // রিয়েল-টাইম স্ট্যাটাস আপডেটের জন্য ক্যাশিং অফ রাখা হলো
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        // Authorization হেডারে Bearer টোকেন পাস করা হলো
+        authorization: `Bearer ${tokenData?.token}`,
+      },
+      cache: "no-store" // রিয়েল-টাইম স্ট্যাটাস আপডেটের জন্য ক্যাশিং অফ রাখা হলো
     });
     const data = await response.json();
     return data;
@@ -76,15 +87,24 @@ export const getFreelancerProposals = async (email) => {
 // একটি নির্দিষ্ট প্রপোজালের ডিটেইলস নিয়ে আসার সার্ভার অ্যাকশন
 export const getProposalDetails = async (proposalId) => {
   try {
+    // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+    const { data: tokenData } = await authClient.token();
+
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/proposals/details/${proposalId}`,
       {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization হেডারে Bearer টোকেন পাস করা হলো
+          authorization: `Bearer ${tokenData?.token}`,
+        },
         cache: "no-store",
       }
     );
     const result = await response.json();
 
-    // ব্যাকএন্ড যদি success: true দেয়, তবে তার ভেতরের data অবজেক্টটি পাঠাবো
+    // ব্যাকএন্ড যদি success: true দেয়, তবে তার ভেতরের data অবজেক্টটি পাঠাবো
     if (result && result.success) {
       return result.data;
     }

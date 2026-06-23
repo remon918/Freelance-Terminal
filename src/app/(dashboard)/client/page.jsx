@@ -24,15 +24,24 @@ export default function ClientDashboard() {
   useEffect(() => {
     const loadDashboardData = async () => {
       if (!session?.user?.id || !session?.user?.email) return;
-      
-      try {
-        setLoading(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-        // ⚡ ১. টাস্ক ডেটা এবং ২. পেমেন্ট হিস্ট্রি ডেটা একসাথে ফেচ করা হচ্ছে (Performance Optimization)
+      try {
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+        // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+        const { data: tokenData } = await authClient.token();
+        const headers = {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${tokenData?.token}`,
+        };
+
+        // ⚡ ১. টাস্ক ডেটা এবং ২. পেমেন্ট হিস্ট্রি ডেটা একসাথে ফেচ করা হচ্ছে
         const [tasksData, paymentRes] = await Promise.all([
-          getMyTasks(session.user.id),
-          fetch(`${apiUrl}/api/payment-history?email=${session.user.email}`).then((res) => res.json())
+          getMyTasks(session.user.id), // নোট: এই ফাংশনের ভেতরে অলরেডি টোকেন হ্যান্ডেল করা আছে
+          fetch(`${apiUrl}/api/payment-history?email=${session.user.email}`, {
+            headers,
+          }).then((res) => res.json()),
         ]);
 
         // টাস্ক সেট করা
@@ -40,10 +49,12 @@ export default function ClientDashboard() {
 
         // পেমেন্ট কালেকশন থেকে আসল টোটাল স্পেন্ড সেট করা
         if (paymentRes.success) {
-          const total = typeof paymentRes.totalSpend === 'object' ? paymentRes.totalSpend?.total : paymentRes.totalSpend;
+          const total =
+            typeof paymentRes.totalSpend === "object"
+              ? paymentRes.totalSpend?.total
+              : paymentRes.totalSpend;
           setTotalSpent(Number(total) || 0);
         }
-
       } catch (error) {
         console.error("Error loading dashboard data:", error);
       } finally {
@@ -51,14 +62,24 @@ export default function ClientDashboard() {
       }
     };
 
-    loadDashboardData();
+    // ক্যাসকেডিং রেন্ডার ওয়ার্নিং এড়াতে ০ মিলিগ্রামের টাইমাউট ট্রিক
+    const timeoutId = setTimeout(() => {
+      setLoading(true);
+      loadDashboardData();
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, [session]);
 
   // 🔥 বাকি ডাইনামিক কাউন্টার লজিক
   const allTasksCount = tasks.length;
-  const openTasksCount = tasks.filter(t => t.status?.toLowerCase() === "open").length;
-  const completedTasksCount = tasks.filter(t => t.status?.toLowerCase() === "completed").length;
-  
+  const openTasksCount = tasks.filter(
+    (t) => t.status?.toLowerCase() === "open",
+  ).length;
+  const completedTasksCount = tasks.filter(
+    (t) => t.status?.toLowerCase() === "completed",
+  ).length;
+
   // সাম্প্রতিক ৫টি প্রজেক্ট টেবিলের জন্য
   const recentProjects = [...tasks]
     .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
@@ -101,7 +122,6 @@ export default function ClientDashboard() {
 
   return (
     <div className="space-y-8 mt-10 md:mt-0 text-inherit max-w-7xl mx-auto p-4 md:p-0 font-sans selection:bg-cyan-500/20 selection:text-cyan-500">
-      
       {/* হেডার সেকশন */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
@@ -154,13 +174,18 @@ export default function ClientDashboard() {
       <div className="rounded-[30px] border border-current/10 bg-current/5 backdrop-blur-md p-6 md:p-8 transition-all duration-300 hover:border-cyan-500/20">
         <div className="flex items-center justify-between mb-6">
           <div className="space-y-1">
-            <h2 className="text-xl md:text-2xl font-bold text-inherit">Recent Projects</h2>
+            <h2 className="text-xl md:text-2xl font-bold text-inherit">
+              Recent Projects
+            </h2>
             <p className="text-sm opacity-60">
               Your latest posted tasks and active project summaries.
             </p>
           </div>
           {tasks.length > 5 && (
-            <Link href="/client/tasks" className="text-xs font-bold text-cyan-500 hover:underline flex items-center gap-1">
+            <Link
+              href="/client/tasks"
+              className="text-xs font-bold text-cyan-500 hover:underline flex items-center gap-1"
+            >
               View All <ArrowUpRight size={14} />
             </Link>
           )}
@@ -168,7 +193,9 @@ export default function ClientDashboard() {
 
         {recentProjects.length === 0 ? (
           <div className="text-center py-12 border border-dashed border-current/10 rounded-2xl bg-current/5">
-            <p className="text-sm opacity-40 font-medium italic">No projects created yet.</p>
+            <p className="text-sm opacity-40 font-medium italic">
+              No projects created yet.
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto rounded-2xl border border-current/10 bg-current/5">
@@ -186,7 +213,10 @@ export default function ClientDashboard() {
                 {recentProjects.map((project) => {
                   const isComp = project.status?.toLowerCase() === "completed";
                   return (
-                    <tr key={project._id} className="hover:bg-current/5 transition-colors">
+                    <tr
+                      key={project._id}
+                      className="hover:bg-current/5 transition-colors"
+                    >
                       <td className="p-4 font-bold text-inherit max-w-50 truncate">
                         {project.title}
                       </td>
@@ -206,7 +236,13 @@ export default function ClientDashboard() {
                               : "bg-cyan-500/10 text-cyan-500 border-cyan-500/20"
                           }`}
                         >
-                          {!isComp && <Orbit size={10} className="animate-spin" style={{ animationDuration: '3s' }} />}
+                          {!isComp && (
+                            <Orbit
+                              size={10}
+                              className="animate-spin"
+                              style={{ animationDuration: "3s" }}
+                            />
+                          )}
                           {project.status}
                         </span>
                       </td>

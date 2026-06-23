@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { Trash2, Loader2, AlertTriangle, Search } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export default function TaskManagement() {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // ফিল্টারিং স্টেটসমূহ
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -18,13 +19,23 @@ export default function TaskManagement() {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-  // ১. ডাটা লোড করা
+  // ১. ডাটা লোড করা (GET Request)
   useEffect(() => {
     let isMounted = true;
 
     async function loadTasks() {
       try {
-        const res = await fetch(`${API_URL}/api/admin/tasks`);
+        // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+        const { data: tokenData } = await authClient.token();
+
+        const res = await fetch(`${API_URL}/api/admin/tasks`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization হেডারে Bearer টোকেন পাস করা হলো
+            authorization: `Bearer ${tokenData?.token}`,
+          },
+        });
         const data = await res.json();
         if (data.success && isMounted) {
           setTasks(data.tasks);
@@ -50,18 +61,31 @@ export default function TaskManagement() {
     setIsModalOpen(true);
   };
 
-  // ৩. মডাল থেকে ডিলিট কনফার্ম করা
+  // ৩. মডাল থেকে ডিলিট কনফার্ম করা (DELETE Request)
   const handleConfirmDelete = async () => {
     if (!taskToDelete) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/admin/tasks/${taskToDelete._id}`, {
-        method: "DELETE",
-      });
+      // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+      const { data: tokenData } = await authClient.token();
+
+      const res = await fetch(
+        `${API_URL}/api/admin/tasks/${taskToDelete._id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization হেডারে Bearer টোকেন পাস করা হলো
+            authorization: `Bearer ${tokenData?.token}`,
+          },
+        },
+      );
       const data = await res.json();
 
       if (data.success) {
-        setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskToDelete._id));
+        setTasks((prevTasks) =>
+          prevTasks.filter((task) => task._id !== taskToDelete._id),
+        );
         setIsModalOpen(false);
         setTaskToDelete(null);
       } else {
@@ -83,8 +107,10 @@ export default function TaskManagement() {
 
     // ক্যাটাগরি ম্যাচিং
     const matchesCategory =
-      categoryFilter === "all" ? true : taskCategory === categoryFilter.toLowerCase();
-    
+      categoryFilter === "all"
+        ? true
+        : taskCategory === categoryFilter.toLowerCase();
+
     // স্ট্যাটাস ম্যাচিং
     const matchesStatus =
       statusFilter === "all" ? true : taskStatus === statusFilter.toLowerCase();
@@ -106,7 +132,9 @@ export default function TaskManagement() {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-inherit">Task Management</h1>
-        <p className="text-sm opacity-60">{filteredTasks.length} tasks matching</p>
+        <p className="text-sm opacity-60">
+          {filteredTasks.length} tasks matching
+        </p>
       </div>
 
       {/* Search and Filters Row */}
@@ -130,12 +158,42 @@ export default function TaskManagement() {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="rounded-lg border border-current/10 bg-current/5 px-4 py-1.5 text-sm outline-none transition-all focus:border-cyan-500 text-inherit dark:bg-[#0f172a]"
           >
-            <option value="all" className="text-inherit dark:text-white dark:bg-[#0f172a]">All Categories</option>
-            <option value="design" className="text-inherit dark:text-white dark:bg-[#0f172a]">Design</option>
-            <option value="writing" className="text-inherit dark:text-white dark:bg-[#0f172a]">Writing</option>
-            <option value="development" className="text-inherit dark:text-white dark:bg-[#0f172a]">Development</option>
-            <option value="marketing" className="text-inherit dark:text-white dark:bg-[#0f172a]">Marketing</option>
-            <option value="other" className="text-inherit dark:text-white dark:bg-[#0f172a]">Other</option>
+            <option
+              value="all"
+              className="text-inherit dark:text-white dark:bg-[#0f172a]"
+            >
+              All Categories
+            </option>
+            <option
+              value="design"
+              className="text-inherit dark:text-white dark:bg-[#0f172a]"
+            >
+              Design
+            </option>
+            <option
+              value="writing"
+              className="text-inherit dark:text-white dark:bg-[#0f172a]"
+            >
+              Writing
+            </option>
+            <option
+              value="development"
+              className="text-inherit dark:text-white dark:bg-[#0f172a]"
+            >
+              Development
+            </option>
+            <option
+              value="marketing"
+              className="text-inherit dark:text-white dark:bg-[#0f172a]"
+            >
+              Marketing
+            </option>
+            <option
+              value="other"
+              className="text-inherit dark:text-white dark:bg-[#0f172a]"
+            >
+              Other
+            </option>
           </select>
 
           {/* Status Selector */}
@@ -144,10 +202,30 @@ export default function TaskManagement() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="rounded-lg border border-current/10 bg-current/5 px-4 py-1.5 text-sm outline-none transition-all focus:border-cyan-500 text-inherit dark:bg-[#0f172a]"
           >
-            <option value="all" className="text-inherit dark:text-white dark:bg-[#0f172a]">All Status</option>
-            <option value="open" className="text-inherit dark:text-white dark:bg-[#0f172a]">Open</option>
-            <option value="in progress" className="text-inherit dark:text-white dark:bg-[#0f172a]">In Progress</option>
-            <option value="completed" className="text-inherit dark:text-white dark:bg-[#0f172a]">Completed</option>
+            <option
+              value="all"
+              className="text-inherit dark:text-white dark:bg-[#0f172a]"
+            >
+              All Status
+            </option>
+            <option
+              value="open"
+              className="text-inherit dark:text-white dark:bg-[#0f172a]"
+            >
+              Open
+            </option>
+            <option
+              value="in progress"
+              className="text-inherit dark:text-white dark:bg-[#0f172a]"
+            >
+              In Progress
+            </option>
+            <option
+              value="completed"
+              className="text-inherit dark:text-white dark:bg-[#0f172a]"
+            >
+              Completed
+            </option>
           </select>
         </div>
       </div>
@@ -179,11 +257,14 @@ export default function TaskManagement() {
                 filteredTasks.map((task) => {
                   const currentStatus = task.status?.toLowerCase() || "open";
 
-                  let statusStyles = "bg-sky-500/10 text-sky-500 border-sky-500/20"; 
+                  let statusStyles =
+                    "bg-sky-500/10 text-sky-500 border-sky-500/20";
                   if (currentStatus === "in progress") {
-                    statusStyles = "bg-amber-500/10 text-amber-500 border-amber-500/20";
+                    statusStyles =
+                      "bg-amber-500/10 text-amber-500 border-amber-500/20";
                   } else if (currentStatus === "completed") {
-                    statusStyles = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+                    statusStyles =
+                      "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
                   }
 
                   const createdDate = task.createdAt
@@ -195,7 +276,10 @@ export default function TaskManagement() {
                     : "Jun 22, 2026";
 
                   return (
-                    <tr key={task._id} className="hover:bg-current/5 transition-colors">
+                    <tr
+                      key={task._id}
+                      className="hover:bg-current/5 transition-colors"
+                    >
                       {/* Title */}
                       <td className="px-6 py-4 font-medium text-inherit max-w-50 truncate">
                         {task.title || "Untitled Task"}
@@ -209,28 +293,35 @@ export default function TaskManagement() {
                       </td>
 
                       {/* Client Email */}
-                      <td className="px-6 py-4 opacity-70">{task.clientEmail || "N/A"}</td>
+                      <td className="px-6 py-4 opacity-70">
+                        {task.clientEmail || "N/A"}
+                      </td>
 
                       {/* Budget */}
                       <td className="px-6 py-4 font-semibold text-inherit">
-                        ${task.budget ? Number(task.budget).toLocaleString() : "0"}
+                        $
+                        {task.budget
+                          ? Number(task.budget).toLocaleString()
+                          : "0"}
                       </td>
 
                       {/* Status Tag */}
                       <td className="px-6 py-4">
-                        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold border ${statusStyles}`}>
+                        <span
+                          className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold border ${statusStyles}`}
+                        >
                           {task.status || "Open"}
                         </span>
                       </td>
 
                       {/* Proposals Count */}
                       <td className="px-6 py-4 opacity-80">
-                        {Array.isArray(task.proposals) 
-                          ? task.proposals.length 
-                          : typeof task.proposals === 'object' && task.proposals !== null
-                            ? 1 
-                            : (task.proposalsCount ?? 0)
-                        }
+                        {Array.isArray(task.proposals)
+                          ? task.proposals.length
+                          : typeof task.proposals === "object" &&
+                              task.proposals !== null
+                            ? 1
+                            : (task.proposalsCount ?? 0)}
                       </td>
 
                       {/* Created Date */}
@@ -263,14 +354,21 @@ export default function TaskManagement() {
               <AlertTriangle size={24} />
               <h3 className="text-lg font-bold">Confirm Delete</h3>
             </div>
-            
+
             <p className="text-sm opacity-80 mb-6">
-              Are you sure you want to delete the task <span className="font-semibold text-rose-300">{taskToDelete?.title}</span>? This action cannot be undone.
+              Are you sure you want to delete the task{" "}
+              <span className="font-semibold text-rose-300">
+                {taskToDelete?.title}
+              </span>
+              ? This action cannot be undone.
             </p>
 
             <div className="flex justify-end gap-3 text-sm font-semibold">
               <button
-                onClick={() => { setIsModalOpen(false); setTaskToDelete(null); }}
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setTaskToDelete(null);
+                }}
                 className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 transition-colors"
               >
                 Cancel

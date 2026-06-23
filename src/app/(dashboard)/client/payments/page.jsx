@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { authClient } from "@/lib/auth-client"; 
-
+import { authClient } from "@/lib/auth-client";
 
 const PaymentHistoryPage = () => {
-  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
   const userEmail = session?.user?.email;
 
   const [payments, setPayments] = useState([]);
@@ -17,23 +17,48 @@ const PaymentHistoryPage = () => {
       return;
     }
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const loadPaymentHistory = async () => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-    fetch(`${apiUrl}/api/payment-history?email=${userEmail}`)
-      .then((res) => res.json())
-      .then((data) => {
+      try {
+        // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+        const { data: tokenData } = await authClient.token();
+
+        const res = await fetch(
+          `${apiUrl}/api/payment-history?email=${userEmail}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              // Authorization হেডারে Bearer টোকেন পাস করা হলো
+              authorization: `Bearer ${tokenData?.token}`,
+            },
+          },
+        );
+        const data = await res.json();
+
         if (data.success) {
           setPayments(data.history || []);
-          const total = typeof data.totalSpend === 'object' ? data.totalSpend?.total : data.totalSpend;
+          const total =
+            typeof data.totalSpend === "object"
+              ? data.totalSpend?.total
+              : data.totalSpend;
           setTotalSpend(Number(total) || 0);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error loading payments:", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      } finally {
+        setLoading(false); // এটি async ব্লকের শেষে রান হবে, তাই কোনো এরর আসবে না
+      }
+    };
+
+    // ক্যাসকেডিং রেন্ডার ওয়ার্নিং এড়াতে setLoading(true) এবং ফাংশন কল টাইমাউটে রাখা হলো
+    const timeoutId = setTimeout(() => {
+      setLoading(true);
+      loadPaymentHistory();
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, [userEmail]);
 
   // 🔥 ফিক্স ২: ক্যাসকেডিং রেন্ডার এড়াতে অ্যাসিনক্রোনাসলি লোডিং ফলস করা হলো
@@ -151,11 +176,14 @@ const PaymentHistoryPage = () => {
                   <span>Date & Time:</span>
                   <span className="text-gray-600">
                     {payment.createdAt
-                      ? new Date(payment.createdAt).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        })
+                      ? new Date(payment.createdAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          },
+                        )
                       : "N/A"}
                   </span>
                 </div>

@@ -60,7 +60,7 @@ const TaskPostingPage = () => {
   };
 
   return (
-    <div className="mx-auto max-w-3xl p-6 md:p-10">
+    <div className="mx-auto max-w-3xl mt-12 md:mt-0 px-6 md:px-10">
       <div className="mb-8">
         <h1 className="text-4xl font-bold">Post a New Task</h1>
         <p className="mt-2 text-base-content/70">

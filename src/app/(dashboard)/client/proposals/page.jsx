@@ -54,20 +54,24 @@ const ManageProposalsPage = () => {
 
     fetchProposals();
   }, [session?.user?.id]);
-
-  // প্রপোজাল Accept/Reject হ্যান্ডলার (পেমেন্ট সাকসেস হওয়ার পর এটা কল হবে)
   const handleProposalAction = async (taskId, proposalId, action) => {
     try {
       if (action === "Reject") {
         setRejectLoading(true);
       }
-      
+
+      // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+      const { data: tokenData } = await authClient.token();
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/proposals/${taskId}/${proposalId}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization হেডারে Bearer টোকেন পাস করা হলো
+            authorization: `Bearer ${tokenData?.token}`,
+          },
           body: JSON.stringify({
             action: action,
             status: action === "Accept" ? "Accepted" : "Rejected",
@@ -187,7 +191,7 @@ const ManageProposalsPage = () => {
           await handleProposalAction(
             selectedProposalData.taskId,
             selectedProposalData.proposalId,
-            "Accept"
+            "Accept",
           );
         }}
       />
@@ -203,7 +207,8 @@ const ManageProposalsPage = () => {
           Manage Proposals
         </h1>
         <p className="mt-2 text-sm opacity-60">
-          Review, filter, and respond to incoming pitches from global freelancers.
+          Review, filter, and respond to incoming pitches from global
+          freelancers.
         </p>
       </div>
 
@@ -301,18 +306,27 @@ const ManageProposalsPage = () => {
                   <div className="flex flex-wrap items-center gap-4 text-xs">
                     <div className="flex items-center gap-1 bg-current/5 px-3 py-1.5 rounded-lg border border-current/10">
                       <DollarSign size={14} className="text-cyan-500" />
-                      <span className="text-inherit font-extrabold">${proposal.proposedBudget}</span>
+                      <span className="text-inherit font-extrabold">
+                        ${proposal.proposedBudget}
+                      </span>
                     </div>
                     <div className="flex items-center gap-1 bg-current/5 px-3 py-1.5 rounded-lg border border-current/10">
                       <Clock size={14} className="text-amber-500" />
-                      <span className="text-inherit font-semibold">{proposal.estimatedDays} Days</span>
+                      <span className="text-inherit font-semibold">
+                        {proposal.estimatedDays} Days
+                      </span>
                     </div>
                     <div className="flex items-center gap-1 bg-current/5 px-3 py-1.5 rounded-lg border border-current/10 opacity-60">
                       <Calendar size={14} />
                       <span>
-                        {new Date(proposal.createdAt).toLocaleDateString("en-US", {
-                          month: "short", day: "numeric", year: "numeric",
-                        })}
+                        {new Date(proposal.createdAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                            year: "numeric",
+                          },
+                        )}
                       </span>
                     </div>
                   </div>
@@ -321,12 +335,17 @@ const ManageProposalsPage = () => {
                   {proposal.taskStatus === "open" && isPending && (
                     <div className="flex items-center gap-2 sm:justify-end w-full sm:w-auto">
                       <button
-                        onClick={() => handleRejectClick(proposal.taskId, proposal.proposalId)}
+                        onClick={() =>
+                          handleRejectClick(
+                            proposal.taskId,
+                            proposal.proposalId,
+                          )
+                        }
                         className="flex-1 sm:flex-none px-4 py-2 bg-current/5 hover:bg-rose-500/10 border border-current/10 hover:border-rose-500/30 text-rose-500 font-bold text-xs rounded-xl transition duration-300 cursor-pointer"
                       >
                         Reject
                       </button>
-                      
+
                       {/* 💳 বাটন ক্লিক হ্যান্ডলার পরিবর্তন করে ম্যাপ করা প্রপোজাল অবজেক্টটি পাস করলাম */}
                       <button
                         onClick={() => handleAcceptPitchClick(proposal)}

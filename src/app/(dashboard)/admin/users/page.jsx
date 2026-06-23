@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import avatar from "@/assets/user.png";
 import { Search, ShieldAlert, ShieldCheck, Loader2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -11,16 +12,25 @@ export default function UserManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
 
-  // এনভায়রনমেন্ট ভেরিয়েবল থেকে বেজ ইউআরএল নেওয়া
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-  // ১. ভিএস কোডের এররটি ফিক্স করতে useEffect এর ভেতর প্রপার অ্যাসিনক্রোনাস হ্যান্ডলিং
+  // ১. ইউজার ডাটা লোড করা (GET Request)
   useEffect(() => {
     let isMounted = true;
 
     async function loadData() {
       try {
-        const res = await fetch(`${API_URL}/api/admin/users`);
+        // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+        const { data: tokenData } = await authClient.token();
+
+        const res = await fetch(`${API_URL}/api/admin/users`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            // Authorization হেডারে Bearer টোকেন পাস করা হলো
+            authorization: `Bearer ${tokenData?.token}`,
+          },
+        });
         const data = await res.json();
         if (data.success && isMounted) {
           setUsers(data.users);
@@ -41,15 +51,20 @@ export default function UserManagement() {
     };
   }, [API_URL]);
 
-  // ২. স্ট্যাটাস টগল (Block/Unblock) করার ফাংশন
+  // ২. ইউজারের স্ট্যাটাস পরিবর্তন করা (PATCH Request)
   const handleToggleStatus = async (userId, currentStatus) => {
     const updatedStatus = currentStatus === "Blocked" ? "Active" : "Blocked";
 
     try {
+      // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+      const { data: tokenData } = await authClient.token();
+
       const res = await fetch(`${API_URL}/api/admin/users/${userId}/status`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          // Authorization হেডারে Bearer টোকেন পাস করা হলো
+          authorization: `Bearer ${tokenData?.token}`,
         },
         body: JSON.stringify({ status: updatedStatus }),
       });
@@ -58,8 +73,8 @@ export default function UserManagement() {
       if (data.success) {
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
-            user._id === userId ? { ...user, status: updatedStatus } : user
-          )
+            user._id === userId ? { ...user, status: updatedStatus } : user,
+          ),
         );
       }
     } catch (error) {
@@ -74,7 +89,9 @@ export default function UserManagement() {
       user.email?.toLowerCase().includes(searchQuery.toLowerCase());
 
     const matchesRole =
-      roleFilter === "all" ? true : user.role?.toLowerCase() === roleFilter.toLowerCase();
+      roleFilter === "all"
+        ? true
+        : user.role?.toLowerCase() === roleFilter.toLowerCase();
 
     return matchesSearch && matchesRole;
   });
@@ -115,10 +132,30 @@ export default function UserManagement() {
           onChange={(e) => setRoleFilter(e.target.value)}
           className="rounded-lg border border-current/10 bg-current/5 px-4 py-2 text-sm outline-none transition-all focus:border-cyan-500 text-inherit dark:bg-[#0f172a]"
         >
-          <option value="all" className="text-inherit dark:text-white dark:bg-[#0f172a]">All Roles</option>
-          <option value="admin" className="text-inherit dark:text-white dark:bg-[#0f172a]">Admin</option>
-          <option value="client" className="text-inherit dark:text-white dark:bg-[#0f172a]">Client</option>
-          <option value="freelancer" className="text-inherit dark:text-white dark:bg-[#0f172a]">Freelancer</option>
+          <option
+            value="all"
+            className="text-inherit dark:text-white dark:bg-[#0f172a]"
+          >
+            All Roles
+          </option>
+          <option
+            value="admin"
+            className="text-inherit dark:text-white dark:bg-[#0f172a]"
+          >
+            Admin
+          </option>
+          <option
+            value="client"
+            className="text-inherit dark:text-white dark:bg-[#0f172a]"
+          >
+            Client
+          </option>
+          <option
+            value="freelancer"
+            className="text-inherit dark:text-white dark:bg-[#0f172a]"
+          >
+            Freelancer
+          </option>
         </select>
       </div>
 
@@ -156,20 +193,31 @@ export default function UserManagement() {
                     : "Jun 22, 2026";
 
                   return (
-                    <tr key={user._id} className="hover:bg-current/5 transition-colors">
+                    <tr
+                      key={user._id}
+                      className="hover:bg-current/5 transition-colors"
+                    >
                       {/* User Info */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <Image
-                            src={user.image && user.image.startsWith("http") ? user.image : avatar}
+                            src={
+                              user.image && user.image.startsWith("http")
+                                ? user.image
+                                : avatar
+                            }
                             alt={user.name || "user"}
                             width={40}
                             height={40}
                             className="h-10 w-10 rounded-full border border-current/10 object-cover"
                           />
                           <div>
-                            <div className="font-semibold text-inherit">{user.name || "N/A"}</div>
-                            <div className="text-xs opacity-50">{user.email}</div>
+                            <div className="font-semibold text-inherit">
+                              {user.name || "N/A"}
+                            </div>
+                            <div className="text-xs opacity-50">
+                              {user.email}
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -200,7 +248,9 @@ export default function UserManagement() {
                       {/* Action Button - রিকোয়ারমেন্ট অনুযায়ী আইকন ও পারফেক্ট টগল কালার */}
                       <td className="px-6 py-4 text-right">
                         <button
-                          onClick={() => handleToggleStatus(user._id, userStatus)}
+                          onClick={() =>
+                            handleToggleStatus(user._id, userStatus)
+                          }
                           className={`inline-flex items-center gap-1.5 text-sm font-semibold transition-colors hover:opacity-80 ${
                             isBlocked ? "text-emerald-500" : "text-rose-500"
                           }`}

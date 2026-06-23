@@ -37,28 +37,48 @@ const FreelancerEarningsPage = () => {
     return () => cancelAnimationFrame(handle);
   }, []);
 
-
   useEffect(() => {
     if (!freelancerEmail) {
       return;
     }
-    
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+    const loadEarnings = async () => {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-    fetch(`${apiUrl}/api/freelancer-earnings?email=${freelancerEmail}`)
-      .then((res) => res.json())
-      .then((resData) => {
+      try {
+        // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+        const { data: tokenData } = await authClient.token();
+
+        const res = await fetch(
+          `${apiUrl}/api/freelancer-earnings?email=${freelancerEmail}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              // Authorization হেডারে Bearer টোকেন পাস করা হলো
+              authorization: `Bearer ${tokenData?.token}`,
+            },
+          },
+        );
+        const resData = await res.json();
+
         if (resData.success) {
           setData(resData);
         }
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Error loading earnings:", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+      } finally {
+        setLoading(false); // এটি async ব্লকের ভেতরে শেষে রান হবে, তাই কোনো এরর আসবে না
+      }
+    };
+
+    // ক্যাসকেডিং রেন্ডার ওয়ার্নিং এড়াতে setLoading(true) এবং ফাংশন কল টাইমাউটে রাখা হলো
+    const timeoutId = setTimeout(() => {
+      setLoading(true);
+      loadEarnings();
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, [freelancerEmail]);
 
   // 🔥 ফিক্স ২: সেশন পেন্ডিং বা সেশন নাল হওয়ার কন্ডিশনটি অ্যাসিনক্রোনাসলি শিডিউল করা হলো

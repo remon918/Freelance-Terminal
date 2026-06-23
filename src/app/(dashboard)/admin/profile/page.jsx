@@ -17,7 +17,7 @@ import { authClient } from "@/lib/auth-client";
 
 const AdminProfilePage = () => {
   const { data: session, isPending } = authClient.useSession();
-  
+
   const [profile, setProfile] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState(null);
@@ -25,30 +25,45 @@ const AdminProfilePage = () => {
   const [showToast, setShowToast] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // ১. অ্যাডমিন প্রোফাইল ডেটা লোড করা
   useEffect(() => {
-    const loadAdminProfile = async () => {
-      if (!session?.user?.id) return;
+  const loadAdminProfile = async () => {
+    try {
+      // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+      const { data: tokenData } = await authClient.token();
+      
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+      const res = await fetch(`${apiUrl}/api/admins/${session.user.id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${tokenData?.token}`,
+        },
+      });
+      const data = await res.json();
 
-      try {
-        setLoading(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-        const res = await fetch(`${apiUrl}/api/admins/${session.user.id}`);
-        const data = await res.json();
-
-        if (data && !data.error) {
-          setProfile(data);
-          setEditedProfile(data);
-        }
-      } catch (error) {
-        console.error("Error fetching admin profile data:", error);
-      } finally {
-        setLoading(false);
+      if (data && !data.error) {
+        setProfile(data);
+        setEditedProfile(data);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching admin profile data:", error);
+    } finally {
+      setLoading(false); // এটি async ব্লকের ভেতর আছে, তাই কোনো সমস্যা নেই
+    }
+  };
 
+  if (session?.user?.id) {
     loadAdminProfile();
-  }, [session]);
+  } else {
+    // সরাসরি setLoading(false) কল না করে একটি ০ মিলিগ্রামের টাইমাউট দিলে 
+    // রিঅ্যাক্ট রেন্ডার সাইকেল শেষ হওয়ার পর এটি রান করবে এবং এররটি চলে যাবে।
+    const timeoutId = setTimeout(() => {
+      setLoading(false);
+    }, 0);
+    
+    return () => clearTimeout(timeoutId);
+  }
+}, [session]);
 
   const handleStartEdit = () => {
     setEditedProfile({ ...profile });
@@ -60,49 +75,57 @@ const AdminProfilePage = () => {
     setEditedProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  // ২. রিয়েল-টাইম স্টেট আপডেট লজিক (No page refresh window.location.reload)
   const handleSave = async () => {
-    try {
-      setIsSaving(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+  try {
+    setIsSaving(true);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-      const payload = {
-        name: editedProfile.name,
-        image: editedProfile.image,
-        bio: editedProfile.bio,
-        title: editedProfile.title,
-      };
+    // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+    const { data: tokenData } = await authClient.token();
 
-      const response = await fetch(`${apiUrl}/api/admins/${session.user.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    const payload = {
+      name: editedProfile.name,
+      image: editedProfile.image,
+      bio: editedProfile.bio,
+      title: editedProfile.title,
+    };
 
-      const result = await response.json();
+    const response = await fetch(`${apiUrl}/api/admins/${session.user.id}`, {
+      method: "PUT",
+      headers: { 
+        "Content-Type": "application/json",
+        // Authorization হেডারে Bearer টোকেন পাস করা হলো
+        authorization: `Bearer ${tokenData?.token}`,
+      },
+      body: JSON.stringify(payload),
+    });
 
-      if (result.success) {
-        // লাইভ চেঞ্জ উইদাউট রিলোড
-        setProfile({ ...editedProfile });
-        setIsEditing(false);
-        setShowToast(true);
+    const result = await response.json();
 
-        setTimeout(() => {
-          setShowToast(false);
-        }, 3000);
-      }
-    } catch (error) {
-      console.error("Error saving admin profile:", error);
-    } finally {
-      setIsSaving(false);
+    if (result.success) {
+      // লাইভ চেঞ্জ উইদাউট রিলোড
+      setProfile({ ...editedProfile });
+      setIsEditing(false);
+      setShowToast(true);
+
+      setTimeout(() => {
+        setShowToast(false);
+      }, 3000);
     }
-  };
+  } catch (error) {
+    console.error("Error saving admin profile:", error);
+  } finally {
+    setIsSaving(false);
+  }
+};
 
   if (isPending || loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-2 text-inherit opacity-60 font-sans">
         <Loader2 className="w-6 h-6 animate-spin text-cyan-500" />
-        <p className="text-sm font-bold tracking-wider uppercase">Loading Core Registry...</p>
+        <p className="text-sm font-bold tracking-wider uppercase">
+          Loading Core Registry...
+        </p>
       </div>
     );
   }
@@ -110,14 +133,15 @@ const AdminProfilePage = () => {
   if (!profile) {
     return (
       <div className="text-center mt-12 text-rose-500 font-sans p-6 border border-rose-500/10 bg-rose-500/5 max-w-md mx-auto rounded-2xl">
-        <p className="text-base font-extrabold">System Guard: Record Unresolved</p>
+        <p className="text-base font-extrabold">
+          System Guard: Record Unresolved
+        </p>
       </div>
     );
   }
 
   return (
     <div className="max-w-4xl mt-12 md:mt-0 mx-auto px-4 md:px-6 space-y-6 font-sans antialiased relative text-inherit min-h-screen selection:bg-cyan-500/20 selection:text-cyan-500">
-      
       {/* সাকসেস টোস্ট অ্যালার্ট */}
       {showToast && (
         <div className="fixed top-5 right-5 z-50 flex items-center gap-2 bg-emerald-500 text-zinc-950 px-4 py-3 rounded-xl shadow-lg text-sm font-extrabold animate-in fade-in slide-in-from-top-4 duration-300">
@@ -129,7 +153,8 @@ const AdminProfilePage = () => {
       <div className="flex items-center justify-between border-b border-current/10 pb-4">
         <div className="space-y-1">
           <h1 className="text-2xl md:text-3xl font-black tracking-tight text-inherit flex items-center gap-2">
-            <Terminal className="w-6 h-6 text-cyan-500 stroke-[2.5]" /> Root Profile
+            <Terminal className="w-6 h-6 text-cyan-500 stroke-[2.5]" /> Root
+            Profile
           </h1>
           <p className="text-xs opacity-50 font-bold">
             System Administrator core cryptographic profile configurations
@@ -169,7 +194,6 @@ const AdminProfilePage = () => {
 
       {/* মূল লেআউট গ্রিড */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        
         {/* বাম কলাম: মেম্বার কার্ড ও কুইক অথ ডোমেন */}
         <div className="md:col-span-1 space-y-6">
           <div className="border border-current/10 bg-current/5 rounded-3xl p-6 shadow-sm flex flex-col items-center text-center relative overflow-hidden backdrop-blur-md">
@@ -179,8 +203,12 @@ const AdminProfilePage = () => {
             <div className="relative p-1 bg-linear-to-tr from-cyan-400 to-teal-400 rounded-full shadow-[0_4px_12px_rgba(6,182,212,0.15)] group">
               <Image
                 src={
-                  (isEditing ? editedProfile.image : profile.image)?.startsWith("http")
-                    ? (isEditing ? editedProfile.image : profile.image)
+                  (isEditing ? editedProfile.image : profile.image)?.startsWith(
+                    "http",
+                  )
+                    ? isEditing
+                      ? editedProfile.image
+                      : profile.image
                     : "https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg"
                 }
                 alt="Admin Avatar"
@@ -214,11 +242,14 @@ const AdminProfilePage = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-teal-400" /> Security Status
+                  <ShieldCheck className="w-3.5 h-3.5 text-teal-400" /> Security
+                  Status
                 </span>
                 <span
                   className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${
-                    profile.role === "admin" ? "bg-teal-500/10 text-teal-400" : "bg-amber-500/10 text-amber-500"
+                    profile.role === "admin"
+                      ? "bg-teal-500/10 text-teal-400"
+                      : "bg-amber-500/10 text-amber-500"
                   }`}
                 >
                   {profile.role || "Admin"}
@@ -233,8 +264,12 @@ const AdminProfilePage = () => {
               <ShieldAlert className="w-5 h-5 stroke-2" />
             </div>
             <div>
-              <h4 className="text-xs font-black uppercase tracking-wider text-inherit">Access Privileges</h4>
-              <p className="text-[11px] opacity-50 font-bold mt-0.5">Full Read/Write Ledger Terminal Authority</p>
+              <h4 className="text-xs font-black uppercase tracking-wider text-inherit">
+                Access Privileges
+              </h4>
+              <p className="text-[11px] opacity-50 font-bold mt-0.5">
+                Full Read/Write Ledger Terminal Authority
+              </p>
             </div>
           </div>
         </div>
@@ -242,7 +277,6 @@ const AdminProfilePage = () => {
         {/* ডান কলাম: এডিটেবল ফর্ম সেকশন */}
         <div className="md:col-span-2 space-y-6">
           <div className="border border-current/10 bg-current/5 rounded-3xl p-6 md:p-8 shadow-sm space-y-6 backdrop-blur-md">
-            
             {/* ১. নাম ও পজিশন/টাইটেল ফিল্ড */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
@@ -266,7 +300,11 @@ const AdminProfilePage = () => {
                 <input
                   type="text"
                   name="title"
-                  value={isEditing ? (editedProfile?.title || "") : (profile?.title || "")}
+                  value={
+                    isEditing
+                      ? editedProfile?.title || ""
+                      : profile?.title || ""
+                  }
                   onChange={handleInputChange}
                   disabled={!isEditing}
                   placeholder="System Administrator"
@@ -309,10 +347,11 @@ const AdminProfilePage = () => {
 
             {/* ৩. সিস্টেম লগ স্ট্যাটাস বা টাইম স্ট্যাম্প */}
             <div className="pt-4 border-t border-current/10 flex flex-wrap gap-4 text-[10px] uppercase font-black tracking-wider opacity-40">
-              <div>Created At: {new Date(profile.createdAt).toLocaleDateString()}</div>
+              <div>
+                Created At: {new Date(profile.createdAt).toLocaleDateString()}
+              </div>
               <div>System Status: Operational</div>
             </div>
-
           </div>
         </div>
       </div>

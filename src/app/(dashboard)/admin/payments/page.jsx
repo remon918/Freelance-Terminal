@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
-import toast, { Toaster } from "react-hot-toast"; 
+import toast, { Toaster } from "react-hot-toast";
 import {
   BarChart,
   Bar,
@@ -24,7 +24,8 @@ import {
 } from "lucide-react";
 
 const AdminPaymentsPage = () => {
-  const { data: session, isPending: isSessionPending } = authClient.useSession();
+  const { data: session, isPending: isSessionPending } =
+    authClient.useSession();
 
   // States
   const [loading, setLoading] = useState(true);
@@ -50,55 +51,71 @@ const AdminPaymentsPage = () => {
   }, []);
 
   // Fetch Tasks Data
-  const loadAdminTasks = () => {
+  const loadAdminTasks = async () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-    fetch(`${apiUrl}/api/admin/tasks`)
-      .then((res) => res.json())
-      .then((resData) => {
-        if (resData.success) {
-          const allTasks = resData.tasks || [];
-          setTasks(allTasks);
+    try {
+      setLoading(true); // টাস্ক লোড হওয়া শুরু হলে লোডিং স্টেট ট্রু করা
 
-          let totalVol = 0;
-          let escrowVol = 0;
-          let completed = 0;
+      // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+      const { data: tokenData } = await authClient.token();
 
-          allTasks.forEach((task) => {
-            const budgetNum = Number(task.budget) || 0;
-            const currentStatus = task.status?.toLowerCase();
-
-            if (currentStatus === "paid" || currentStatus === "completed") {
-              totalVol += budgetNum;
-              completed += 1;
-            } else if (
-              currentStatus === "in-progress" ||
-              currentStatus === "ongoing"
-            ) {
-              escrowVol += budgetNum;
-            }
-          });
-
-          setStats({
-            totalVolume: totalVol,
-            escrowAmount: escrowVol,
-            platformFees: totalVol * 0.1,
-            completedCount: completed,
-          });
-        }
-      })
-      .catch((err) => {
-        console.error("Error loading tasks for admin payments:", err);
-      })
-      .finally(() => {
-        setLoading(false);
+      const response = await fetch(`${apiUrl}/api/admin/tasks`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${tokenData?.token}`, // টোকেন পাঠানো হলো
+        },
       });
+
+      const resData = await response.json();
+
+      if (resData.success) {
+        const allTasks = resData.tasks || [];
+        setTasks(allTasks);
+
+        let totalVol = 0;
+        let escrowVol = 0;
+        let completed = 0;
+
+        allTasks.forEach((task) => {
+          const budgetNum = Number(task.budget) || 0;
+          const currentStatus = task.status?.toLowerCase();
+
+          if (currentStatus === "paid" || currentStatus === "completed") {
+            totalVol += budgetNum;
+            completed += 1;
+          } else if (
+            currentStatus === "in-progress" ||
+            currentStatus === "ongoing"
+          ) {
+            escrowVol += budgetNum;
+          }
+        });
+
+        setStats({
+          totalVolume: totalVol,
+          escrowAmount: escrowVol,
+          platformFees: totalVol * 0.1,
+          completedCount: completed,
+        });
+      }
+    } catch (err) {
+      console.error("Error loading tasks for admin payments:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    loadAdminTasks();
+    const fetchTasks = async () => {
+      await loadAdminTasks();
+    };
+
+    fetchTasks();
   }, []);
 
+  // 🗑️ কনফার্মড ডিলিট অ্যাকশন হ্যান্ডলার
   // 🗑️ কনফার্মড ডিলিট অ্যাকশন হ্যান্ডলার
   const confirmDeleteTask = async () => {
     if (!taskToDelete) return;
@@ -107,11 +124,19 @@ const AdminPaymentsPage = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
     try {
+      // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+      const { data: tokenData } = await authClient.token();
+
       const res = await fetch(`${apiUrl}/api/admin/tasks/${taskToDelete._id}`, {
         method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization হেডারে Bearer টোকেন পাঠানো হচ্ছে
+          authorization: `Bearer ${tokenData?.token}`,
+        },
       });
       const data = await res.json();
-      
+
       if (data.success) {
         toast.success("Transaction log removed successfully!", { id: toastId });
         loadAdminTasks();
@@ -179,7 +204,9 @@ const AdminPaymentsPage = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-2 text-inherit opacity-60 font-sans">
         <Loader2 className="w-6 h-6 animate-spin text-cyan-500" />
-        <p className="text-sm font-bold tracking-wider uppercase">Loading Ledger Data...</p>
+        <p className="text-sm font-bold tracking-wider uppercase">
+          Loading Ledger Data...
+        </p>
       </div>
     );
   }
@@ -194,7 +221,8 @@ const AdminPaymentsPage = () => {
           Financial Master Ledger
         </h1>
         <p className="opacity-50 text-xs font-bold mt-0.5">
-          Track escrow volumes, platform revenues, and financial transactions via active task pipelines.
+          Track escrow volumes, platform revenues, and financial transactions
+          via active task pipelines.
         </p>
       </div>
 
@@ -229,7 +257,9 @@ const AdminPaymentsPage = () => {
             <h2 className="text-3xl font-black tracking-tight text-amber-500">
               ${stats.escrowAmount.toLocaleString()}
             </h2>
-            <p className="text-xs opacity-40 font-bold">Locked in ongoing milestones</p>
+            <p className="text-xs opacity-40 font-bold">
+              Locked in ongoing milestones
+            </p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.1)]">
             <Briefcase className="w-5 h-5 stroke-[2.5]" />
@@ -278,12 +308,22 @@ const AdminPaymentsPage = () => {
                   dataKey="category"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "currentColor", opacity: 0.5, fontSize: 11, fontWeight: 700 }}
+                  tick={{
+                    fill: "currentColor",
+                    opacity: 0.5,
+                    fontSize: 11,
+                    fontWeight: 700,
+                  }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fill: "currentColor", opacity: 0.5, fontSize: 11, fontWeight: 700 }}
+                  tick={{
+                    fill: "currentColor",
+                    opacity: 0.5,
+                    fontSize: 11,
+                    fontWeight: 700,
+                  }}
                 />
                 <Tooltip
                   cursor={{ fill: "currentColor", opacity: 0.03 }}
@@ -294,7 +334,7 @@ const AdminPaymentsPage = () => {
                     border: "1px solid rgba(255, 255, 255, 0.1)",
                     fontSize: "12px",
                     color: "#fff",
-                    fontWeight: 700
+                    fontWeight: 700,
                   }}
                   itemStyle={{ color: "#06b6d4" }}
                 />
@@ -306,9 +346,23 @@ const AdminPaymentsPage = () => {
                 >
                   {/* সুন্দর গ্রেডিয়েন্ট ফিল ইফেক্ট */}
                   <defs>
-                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.85} />
-                      <stop offset="100%" stopColor="#20r8a6" stopOpacity={0.3} />
+                    <linearGradient
+                      id="chartGradient"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
+                      <stop
+                        offset="0%"
+                        stopColor="#06b6d4"
+                        stopOpacity={0.85}
+                      />
+                      <stop
+                        offset="100%"
+                        stopColor="#20r8a6"
+                        stopOpacity={0.3}
+                      />
                     </linearGradient>
                   </defs>
                 </Bar>
@@ -339,9 +393,15 @@ const AdminPaymentsPage = () => {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="text-xs bg-current/5 text-inherit border border-current/10 px-3 py-2.5 rounded-xl focus:outline-none focus:ring-2 focus:ring-cyan-500/30 transition-all font-bold cursor-pointer"
             >
-              <option value="all" className="bg-zinc-950 text-white">All Task Pipelines</option>
-              <option value="paid" className="bg-zinc-950 text-white">Paid / Settled</option>
-              <option value="escrow" className="bg-zinc-950 text-white">In Escrow (Ongoing)</option>
+              <option value="all" className="bg-zinc-950 text-white">
+                All Task Pipelines
+              </option>
+              <option value="paid" className="bg-zinc-950 text-white">
+                Paid / Settled
+              </option>
+              <option value="escrow" className="bg-zinc-950 text-white">
+                In Escrow (Ongoing)
+              </option>
             </select>
           </div>
         </div>
@@ -360,23 +420,32 @@ const AdminPaymentsPage = () => {
             <tbody className="divide-y divide-current/5 text-xs font-bold">
               {filteredTasks.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="py-16 text-center opacity-40 italic">
+                  <td
+                    colSpan="5"
+                    className="py-16 text-center opacity-40 italic"
+                  >
                     No active transactional logs found.
                   </td>
                 </tr>
               ) : (
                 filteredTasks.map((task) => {
                   const statusLower = task.status?.toLowerCase();
-                  const isPaid = statusLower === "paid" || statusLower === "completed";
+                  const isPaid =
+                    statusLower === "paid" || statusLower === "completed";
 
                   return (
-                    <tr key={task._id} className="hover:bg-current/2 transition-colors duration-200 group">
+                    <tr
+                      key={task._id}
+                      className="hover:bg-current/2 transition-colors duration-200 group"
+                    >
                       <td className="py-4 px-6">
                         <div className="font-extrabold max-w-xs truncate text-inherit">
                           {task.title || "Untitled Task"}
                         </div>
                         <div className="mt-1 flex items-center gap-1.5">
-                          <span className={`w-1.5 h-1.5 rounded-full ${isPaid ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"}`} />
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${isPaid ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"}`}
+                          />
                           <span className="text-[10px] font-black uppercase tracking-wider opacity-50">
                             {task.status || "Open"}
                           </span>
@@ -391,7 +460,11 @@ const AdminPaymentsPage = () => {
                         {task.clientEmail}
                       </td>
                       <td className="py-4 px-6 text-sm font-black tracking-tight">
-                        <span className={isPaid ? "text-emerald-400" : "text-amber-400"}>
+                        <span
+                          className={
+                            isPaid ? "text-emerald-400" : "text-amber-400"
+                          }
+                        >
                           ${Number(task.budget).toLocaleString()}
                         </span>
                       </td>
@@ -422,13 +495,19 @@ const AdminPaymentsPage = () => {
                 <AlertTriangle className="w-6 h-6 stroke-[2.5]" />
               </div>
               <div className="space-y-1.5 flex-1">
-                <h3 className="text-lg font-extrabold tracking-tight">Confirm Deletion</h3>
+                <h3 className="text-lg font-extrabold tracking-tight">
+                  Confirm Deletion
+                </h3>
                 <p className="text-xs text-zinc-400 font-medium leading-relaxed">
-                  Are you sure you want to remove the record for <span className="text-zinc-200 font-bold">{taskToDelete.title}</span>? This financial action is permanent and cannot be undone.
+                  Are you sure you want to remove the record for{" "}
+                  <span className="text-zinc-200 font-bold">
+                    {taskToDelete.title}
+                  </span>
+                  ? This financial action is permanent and cannot be undone.
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center justify-end gap-2 pt-2 text-xs font-bold uppercase tracking-wider">
               <button
                 onClick={() => setTaskToDelete(null)}

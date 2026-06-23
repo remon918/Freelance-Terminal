@@ -17,6 +17,7 @@ import {
   ArrowLeft, // ফিরে যাওয়ার আইকনের জন্য যুক্ত করা হয়েছে
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+// import { headers } from "next/headers";
 
 const TaskDetailsPage = () => {
   const { id } = useParams();
@@ -45,7 +46,7 @@ const TaskDetailsPage = () => {
 
         if (data && session?.user?.email) {
           const hasAlreadySubmitted = data.proposals?.some(
-            (proposal) => proposal.freelancerEmail === session.user.email
+            (proposal) => proposal.freelancerEmail === session.user.email,
           );
           if (hasAlreadySubmitted) {
             setIsSubmitted(true);
@@ -69,7 +70,7 @@ const TaskDetailsPage = () => {
       alert("You must be logged in to submit a proposal.");
       return;
     }
-    
+
     if (isSubmitted) {
       alert("You have already submitted a proposal for this task.");
       return;
@@ -86,25 +87,36 @@ const TaskDetailsPage = () => {
       coverNote,
       freelancerEmail: session.user.email,
     };
+    
 
     try {
+      const { data: tokenData } = await authClient.token();
+      // console.log(tokenData);
+
+      // console.log("My JWT Token:", tokenData);
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/proposals`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${tokenData?.token}`,
+          },
           body: JSON.stringify(proposalData),
-        }
+        },
       );
 
       const result = await response.json();
 
       if (response.ok && result.success) {
         setIsSubmitted(true);
-        
+
         setTask((prev) => ({
           ...prev,
-          proposals: [...(prev?.proposals || []), { freelancerEmail: session.user.email }],
+          proposals: [
+            ...(prev?.proposals || []),
+            { freelancerEmail: session.user.email },
+          ],
         }));
       } else {
         alert(result.message || "Failed to submit proposal");
@@ -140,8 +152,7 @@ const TaskDetailsPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:px-6 font-sans text-inherit">
-      
+    <div className="max-w-6xl mx-auto p-4 md:px-6 mt-12 md:0 font-sans text-inherit">
       {/* Back to Tasks Button */}
       <div className="mb-6">
         <button
@@ -155,7 +166,6 @@ const TaskDetailsPage = () => {
 
       {/* মেইন গ্রিড লেআউট */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        
         {/* বাম দিকের সেকশন: টাইটেল, ডেসক্রিপশন ও প্রপোজাল ফর্ম/লিস্ট */}
         <div className="lg:col-span-2 space-y-6">
           <div className="border border-current/10 bg-current/5 rounded-xl p-6 space-y-4">
@@ -218,7 +228,9 @@ const TaskDetailsPage = () => {
                     Proposal Already Submitted
                   </h3>
                   <p className="text-sm opacity-60 max-w-sm">
-                    You have already applied for this task. Your interest has been recorded, and the client can view your application from their dashboard.
+                    You have already applied for this task. Your interest has
+                    been recorded, and the client can view your application from
+                    their dashboard.
                   </p>
                 </div>
               ) : (
@@ -278,8 +290,8 @@ const TaskDetailsPage = () => {
                       value={coverNote}
                       onChange={(e) => setCoverNote(e.target.value)}
                       placeholder={
-                        userRole === "guest" 
-                          ? "Please log in to submit your proposal..." 
+                        userRole === "guest"
+                          ? "Please log in to submit your proposal..."
                           : "Explain why you're the best fit for this task..."
                       }
                       disabled={userRole === "guest"}
@@ -349,7 +361,9 @@ const TaskDetailsPage = () => {
             </div>
             <div>
               <p className="text-xs opacity-60">Deadline</p>
-              <p className="text-base font-semibold">{formatDate(task.deadline)}</p>
+              <p className="text-base font-semibold">
+                {formatDate(task.deadline)}
+              </p>
             </div>
           </div>
 
@@ -382,7 +396,6 @@ const TaskDetailsPage = () => {
             </div>
           </div>
         </div>
-        
       </div>
     </div>
   );

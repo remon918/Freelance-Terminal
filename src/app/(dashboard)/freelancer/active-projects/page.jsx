@@ -16,30 +16,43 @@ export default function ActiveProjectsPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
-    if (!session?.user?.email) return;
+  if (!session?.user?.email) return;
 
-    const fetchProjects = async () => {
-      setIsFetching(true);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-      
+  const fetchProjects = async () => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-      try {
-        const res = await fetch(`${apiUrl}/api/freelancer-projects?email=${session.user.email}`);
-        const data = await res.json();
-        if (data.success) {
-          setActiveProjects(data.activeProjects);
-          setCompletedProjects(data.completedProjects);
-        }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      } finally {
-        setIsFetching(false);
+    try {
+      // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+      const { data: tokenData } = await authClient.token();
+
+      const res = await fetch(`${apiUrl}/api/freelancer-projects?email=${session.user.email}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          // Authorization হেডারে Bearer টোকেন পাস করা হলো
+          authorization: `Bearer ${tokenData?.token}`,
+        },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setActiveProjects(data.activeProjects);
+        setCompletedProjects(data.completedProjects);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setIsFetching(false);
+    }
+  };
 
-
+  // ক্যাসকেডিং রেন্ডার ওয়ার্নিং এড়াতে ০ মিলিগ্রামের টাইমাউট ট্রিক
+  const timeoutId = setTimeout(() => {
+    setIsFetching(true);
     fetchProjects();
-  }, [session, refreshTrigger]);
+  }, 0);
+
+  return () => clearTimeout(timeoutId);
+}, [session, refreshTrigger]);
 
   // সেশন লোড হচ্ছে অথবা ডাটা ফেচ হচ্ছে—এমন অবস্থায় লোডার দেখাবে
   const showLoading = isPending || (session?.user?.email && activeProjects.length === 0 && completedProjects.length === 0 && isFetching);

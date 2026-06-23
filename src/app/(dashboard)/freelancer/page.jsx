@@ -31,14 +31,25 @@ export default function FreelancerDashboard() {
 
     const loadDashboardData = async () => {
       try {
-        setLoading(true);
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
-        // ৩টি সোর্স থেকে প্যারালাল ডাটা ফেচিং
+        // Better Auth থেকে টোকেন নেওয়া হচ্ছে
+        const { data: tokenData } = await authClient.token();
+        const headers = {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${tokenData?.token}`,
+        };
+
+        // ৩টি সোর্স থেকে প্যারালাল ডাটা ফেচিং (হেডার সহ)
         const [proposalsData, projectsRes, earningsRes] = await Promise.all([
-          getFreelancerProposals(freelancerEmail),
-          fetch(`${apiUrl}/api/freelancer-projects?email=${freelancerEmail}`).then((res) => res.json()),
-          fetch(`${apiUrl}/api/freelancer-earnings?email=${freelancerEmail}`).then((res) => res.json()),
+          getFreelancerProposals(freelancerEmail), // নোট: এই ফাংশনের ভেতরেও টোকেন হেডার পাস করা নিশ্চিত করুন
+          fetch(`${apiUrl}/api/freelancer-projects?email=${freelancerEmail}`, {
+            headers,
+          }).then((res) => res.json()),
+          fetch(`${apiUrl}/api/freelancer-earnings?email=${freelancerEmail}`, {
+            headers,
+          }).then((res) => res.json()),
         ]);
 
         setProposals(proposalsData || []);
@@ -58,12 +69,18 @@ export default function FreelancerDashboard() {
       }
     };
 
-    loadDashboardData();
+    // ক্যাসকেডিং রেন্ডার এরর এড়াতে ০ মিলিগ্রামের টাইমাউট দিয়ে setLoading করা হলো
+    const timeoutId = setTimeout(() => {
+      setLoading(true);
+      loadDashboardData();
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
   }, [freelancerEmail]);
 
   // ডাইনামিক স্ট্যাটস ক্যালকুলেশন লজিক
   const totalProposalsCount = proposals.length;
-  const acceptedCount = activeProjects.length; 
+  const acceptedCount = activeProjects.length;
   const completedCount = completedProjects.length;
   const totalEarned = earningsData.totalEarned || 0;
 
@@ -110,11 +127,12 @@ export default function FreelancerDashboard() {
 
   return (
     <div className="space-y-10 mt-10 md:mt-0 max-w-6xl mx-auto p-4 md:px-6 md:py-0 font-sans text-inherit">
-      
       {/* Header Section */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-inherit">Freelancer Dashboard</h1>
+          <h1 className="text-3xl font-bold text-inherit">
+            Freelancer Dashboard
+          </h1>
           <p className="mt-2 opacity-60 text-sm">
             Track your proposals, work status, and real-time earnings.
           </p>
@@ -159,16 +177,22 @@ export default function FreelancerDashboard() {
 
       {/* ---------------- TABLES SECTION ---------------- */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
         {/* Table 1: Active Projects */}
         <div className="rounded-xl border border-current/10 bg-current/5 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-bold text-inherit">In Progress Tasks</h2>
-              <p className="text-xs opacity-60 mt-0.5">Currently active projects you are working on.</p>
+              <h2 className="text-lg font-bold text-inherit">
+                In Progress Tasks
+              </h2>
+              <p className="text-xs opacity-60 mt-0.5">
+                Currently active projects you are working on.
+              </p>
             </div>
             {activeProjects.length > 3 && (
-              <Link href="/freelancer/active-projects" className="text-xs font-semibold text-cyan-500 hover:underline flex items-center gap-1">
+              <Link
+                href="/freelancer/active-projects"
+                className="text-xs font-semibold text-cyan-500 hover:underline flex items-center gap-1"
+              >
                 View All <ArrowUpRight size={14} />
               </Link>
             )}
@@ -191,12 +215,24 @@ export default function FreelancerDashboard() {
                   </thead>
                   <tbody className="divide-y divide-current/5">
                     {recentActiveProjects.map((project) => (
-                      <tr key={project._id} className="hover:bg-current/5 transition-colors">
-                        <td className="px-4 py-3 font-medium text-inherit max-w-45 truncate">{project.title}</td>
-                        <td className="px-4 py-3 font-semibold text-inherit">${project.budget}</td>
+                      <tr
+                        key={project._id}
+                        className="hover:bg-current/5 transition-colors"
+                      >
+                        <td className="px-4 py-3 font-medium text-inherit max-w-45 truncate">
+                          {project.title}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-inherit">
+                          ${project.budget}
+                        </td>
                         <td className="px-4 py-3">
                           <span className="px-2.5 py-0.5 text-[10px] font-bold uppercase rounded-full border bg-cyan-500/10 text-cyan-500 border-cyan-500/20 inline-flex items-center gap-1">
-                            <Orbit size={10} className="animate-spin" style={{ animationDuration: '3s' }} prefix="false" />
+                            <Orbit
+                              size={10}
+                              className="animate-spin"
+                              style={{ animationDuration: "3s" }}
+                              prefix="false"
+                            />
                             Running
                           </span>
                         </td>
@@ -213,11 +249,19 @@ export default function FreelancerDashboard() {
         <div className="rounded-xl border border-current/10 bg-current/5 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg font-bold text-inherit">Recent Bids (Pending)</h2>
-              <p className="text-xs opacity-60 mt-0.5">Awaiting responses from clients.</p>
+              <h2 className="text-lg font-bold text-inherit">
+                Recent Bids (Pending)
+              </h2>
+              <p className="text-xs opacity-60 mt-0.5">
+                Awaiting responses from clients.
+              </p>
             </div>
-            {proposals.filter(p => p.status?.toLowerCase() === "pending").length > 3 && (
-              <Link href="/freelancer/my-proposals" className="text-xs font-semibold text-cyan-500 hover:underline flex items-center gap-1">
+            {proposals.filter((p) => p.status?.toLowerCase() === "pending")
+              .length > 3 && (
+              <Link
+                href="/freelancer/my-proposals"
+                className="text-xs font-semibold text-cyan-500 hover:underline flex items-center gap-1"
+              >
                 View All <ArrowUpRight size={14} />
               </Link>
             )}
@@ -240,9 +284,16 @@ export default function FreelancerDashboard() {
                   </thead>
                   <tbody className="divide-y divide-current/5">
                     {pendingProposals.map((item) => (
-                      <tr key={item.proposalId} className="hover:bg-current/5 transition-colors">
-                        <td className="px-4 py-3 font-medium text-inherit max-w-45 truncate">{item.taskTitle}</td>
-                        <td className="px-4 py-3 font-semibold text-inherit">${item.proposedBudget}</td>
+                      <tr
+                        key={item.proposalId}
+                        className="hover:bg-current/5 transition-colors"
+                      >
+                        <td className="px-4 py-3 font-medium text-inherit max-w-45 truncate">
+                          {item.taskTitle}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-inherit">
+                          ${item.proposedBudget}
+                        </td>
                         <td className="px-4 py-3 text-right">
                           <Link
                             href={`/freelancer/my-proposals/${item.proposalId}`}
@@ -259,7 +310,6 @@ export default function FreelancerDashboard() {
             </div>
           )}
         </div>
-
       </div>
     </div>
   );
