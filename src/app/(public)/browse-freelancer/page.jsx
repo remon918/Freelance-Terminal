@@ -87,7 +87,7 @@ const BrowseFreelancersPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 md:px-6 mt-9 font-sans text-inherit space-y-6">
+    <div className="max-w-6xl mx-auto px-4 md:px-6 mt-7 font-sans text-inherit space-y-6">
       
       {/* হেডার সেকশন */}
       <div className="flex flex-col gap-1">

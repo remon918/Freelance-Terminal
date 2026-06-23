@@ -14,6 +14,7 @@ import {
   Send,
   CheckCircle2,
   Loader2,
+  ArrowLeft, // ফিরে যাওয়ার আইকনের জন্য যুক্ত করা হয়েছে
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
@@ -33,8 +34,8 @@ const TaskDetailsPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // User Role Simulation
-  const userRole = "freelancer";
+  // ডাইনামিক রোল গেট করা (সেশন না থাকলে গেস্ট ইউজার)
+  const userRole = session?.user?.role || "guest";
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -139,7 +140,19 @@ const TaskDetailsPage = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:px-6 mt-6 font-sans text-inherit">
+    <div className="max-w-6xl mx-auto p-4 md:px-6 font-sans text-inherit">
+      
+      {/* Back to Tasks Button */}
+      <div className="mb-6">
+        <button
+          onClick={() => router.push("/browse-task")}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-current/10 bg-current/5 text-sm font-medium transition hover:bg-current/10 opacity-80 hover:opacity-100"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to Tasks
+        </button>
+      </div>
+
       {/* মেইন গ্রিড লেআউট */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
@@ -193,7 +206,7 @@ const TaskDetailsPage = () => {
           </div>
 
           {/* PROPOSAL SECTION OR FORM */}
-          {userRole === "freelancer" ? (
+          {userRole === "guest" || userRole === "freelancer" ? (
             <div className="border border-current/10 bg-current/5 rounded-xl p-6 relative overflow-hidden">
               {/* Already Submitted State */}
               {isSubmitted ? (
@@ -264,15 +277,20 @@ const TaskDetailsPage = () => {
                       required
                       value={coverNote}
                       onChange={(e) => setCoverNote(e.target.value)}
-                      placeholder="Explain why you're the best fit for this task..."
-                      className="w-full px-4 py-2 bg-current/5 border border-current/10 rounded-lg text-sm text-inherit focus:outline-none focus:border-cyan-500 transition placeholder:opacity-30 resize-none"
+                      placeholder={
+                        userRole === "guest" 
+                          ? "Please log in to submit your proposal..." 
+                          : "Explain why you're the best fit for this task..."
+                      }
+                      disabled={userRole === "guest"}
+                      className="w-full px-4 py-2 bg-current/5 border border-current/10 rounded-lg text-sm text-inherit focus:outline-none focus:border-cyan-500 transition placeholder:opacity-30 resize-none disabled:opacity-50"
                     />
                   </div>
 
                   {/* Submit Action Button */}
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || userRole === "guest"}
                     className="w-full py-2 px-4 bg-cyan-600 text-white font-semibold text-sm rounded-lg hover:bg-cyan-700 transition shadow-sm disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? (
@@ -280,6 +298,8 @@ const TaskDetailsPage = () => {
                         <Loader2 className="w-4 h-4 animate-spin" />
                         Processing...
                       </>
+                    ) : userRole === "guest" ? (
+                      "Login to Submit Proposal"
                     ) : (
                       "Submit Proposal"
                     )}
@@ -288,7 +308,7 @@ const TaskDetailsPage = () => {
               )}
             </div>
           ) : (
-            /* Fallback/Client View */
+            /* Fallback/Client/Admin View */
             <div className="border border-current/10 bg-current/5 rounded-xl p-6">
               <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                 Proposals

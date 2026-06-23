@@ -88,7 +88,7 @@ const TasksPage = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto px-4 md:px-6 mt-9 font-sans text-inherit">
+        <div className="max-w-6xl mx-auto px-4 md:px-6 mt-5 font-sans text-inherit">
             
             {/* Header */}
             <div className="mb-8">
