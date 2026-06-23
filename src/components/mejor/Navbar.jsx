@@ -24,6 +24,12 @@ const Navbar = () => {
     return "/client";
   };
 
+  const getProfileHref = (role) => {
+    if (role === "admin") return "/admin/profile";
+    if (role === "freelancer") return "/freelancer/profile";
+    return "/client/profile";
+  };
+
   const menus = session?.user
     ? [
         { name: "Home", href: "/" },
@@ -59,7 +65,6 @@ const Navbar = () => {
   };
 
   return (
-    // header থেকে অতিরিক্ত py-3 বাদ দিয়ে শুধুমাত্র sticky/z-index এর জন্য রাখা হয়েছে
     <header className="z-50 py-2">
       <nav className="mx-auto flex w-[95%] items-center justify-between rounded-2xl border border-gray-500/50 px-3 py-2.5 shadow-md lg:w-[76%]">
         {/* Left */}
@@ -69,7 +74,6 @@ const Navbar = () => {
             <DropDownMenu menus={menus} />
           </div>
 
-          {/* এখানে mb-6 এবং mt-8 বাদ দেওয়া হয়েছে, ফলে হাইট স্বাভাবিক থাকবে */}
           <Link href="/" className="flex items-center gap-3">
             {/* Desktop Logo */}
             <div className="hidden h-9 w-9 items-center justify-center rounded-xl shadow-[0_0_20px_rgba(34,211,238,.25)] md:flex">
@@ -104,7 +108,7 @@ const Navbar = () => {
             <div className="h-8 w-20 animate-pulse rounded-xl bg-base-200" />
           ) : session?.user ? (
             <>
-              <button className="flex items-center">
+              <Link href={getProfileHref(session.user.role)} className="flex items-center">
                 <Image
                   src={userImage}
                   alt="User"
@@ -115,7 +119,7 @@ const Navbar = () => {
                     e.currentTarget.src = avatar.src || avatar;
                   }}
                 />
-              </button>
+              </Link>
 
               <button
                 type="button"

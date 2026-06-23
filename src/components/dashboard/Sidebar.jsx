@@ -35,6 +35,11 @@ export default function Sidebar() {
       href: "/client",
     },
     {
+      name: "Profile Preview",
+      icon: UserRoundPen,
+      href: "/client/profile",
+    },
+    {
       name: "My Tasks",
       icon: ClipboardList,
       href: "/client/tasks",
@@ -94,6 +99,11 @@ export default function Sidebar() {
       name: "Overview",
       icon: LayoutGrid,
       href: "/admin",
+    },
+    {
+      name: "Profile Preview",
+      icon: UserRoundPen,
+      href: "/admin/profile",
     },
     {
       name: "Users",

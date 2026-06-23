@@ -6,48 +6,48 @@ import {
   Camera,
   Save,
   Edit2,
-  Plus,
-  X,
   CheckCircle,
   ShieldCheck,
+  ShieldAlert,
+  Terminal,
   Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import { authClient } from "@/lib/auth-client";
-import { getMyProfile, updateProfile } from "@/lib/api/tasks";
 
-const MyProfilePage = () => {
+const AdminProfilePage = () => {
   const { data: session, isPending } = authClient.useSession();
+  
   const [profile, setProfile] = useState(null);
-
-  // এডিটিং স্টেটস
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState(null);
-  const [newSkill, setNewSkill] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [loading, setLoading] = useState(true);
 
+  // ১. অ্যাডমিন প্রোফাইল ডেটা লোড করা
   useEffect(() => {
-    const loadProfile = async () => {
+    const loadAdminProfile = async () => {
       if (!session?.user?.id) return;
 
       try {
-        const data = await getMyProfile(session.user.id);
+        setLoading(true);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const res = await fetch(`${apiUrl}/api/admins/${session.user.id}`);
+        const data = await res.json();
 
-        const formattedSkills = Array.isArray(data.skills)
-          ? data.skills
-          : data.skills
-            ? data.skills.split(",")
-            : [];
-
-        setProfile({ ...data, skills: formattedSkills });
-        setEditedProfile({ ...data, skills: formattedSkills });
+        if (data && !data.error) {
+          setProfile(data);
+          setEditedProfile(data);
+        }
       } catch (error) {
-        console.error(error);
+        console.error("Error fetching admin profile data:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadProfile();
+    loadAdminProfile();
   }, [session]);
 
   const handleStartEdit = () => {
@@ -60,41 +60,29 @@ const MyProfilePage = () => {
     setEditedProfile((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleAddSkill = (e) => {
-    e.preventDefault();
-    if (newSkill.trim() && !editedProfile.skills.includes(newSkill.trim())) {
-      setEditedProfile((prev) => ({
-        ...prev,
-        skills: [...prev.skills, newSkill.trim()],
-      }));
-      setNewSkill("");
-    }
-  };
-
-  const handleRemoveSkill = (skillToRemove) => {
-    setEditedProfile((prev) => ({
-      ...prev,
-      skills: prev.skills.filter((skill) => skill !== skillToRemove),
-    }));
-  };
-
+  // ২. রিয়েল-টাইম স্টেট আপডেট লজিক (No page refresh window.location.reload)
   const handleSave = async () => {
     try {
       setIsSaving(true);
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
       const payload = {
         name: editedProfile.name,
-        title: editedProfile.title,
         image: editedProfile.image,
         bio: editedProfile.bio,
-        skills: editedProfile.skills,
-        hourlyRate: Number(editedProfile.hourlyRate),
+        title: editedProfile.title,
       };
 
-      const result = await updateProfile(session.user.id, payload);
+      const response = await fetch(`${apiUrl}/api/admins/${session.user.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
 
       if (result.success) {
-        // 🌟 উইন্ডো রিলোড ছাড়া রিয়্যাক্ট স্টেট আপডেট করে লাইভ চেঞ্জ দেখানো হলো
+        // লাইভ চেঞ্জ উইদাউট রিলোড
         setProfile({ ...editedProfile });
         setIsEditing(false);
         setShowToast(true);
@@ -104,17 +92,25 @@ const MyProfilePage = () => {
         }, 3000);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error saving admin profile:", error);
     } finally {
       setIsSaving(false);
     }
   };
 
-  if (isPending || !profile || !editedProfile) {
+  if (isPending || loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] gap-2 text-inherit opacity-60 font-sans">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-2 text-inherit opacity-60 font-sans">
         <Loader2 className="w-6 h-6 animate-spin text-cyan-500" />
-        <p className="text-sm font-bold tracking-wider uppercase">Loading profile details...</p>
+        <p className="text-sm font-bold tracking-wider uppercase">Loading Core Registry...</p>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="text-center mt-12 text-rose-500 font-sans p-6 border border-rose-500/10 bg-rose-500/5 max-w-md mx-auto rounded-2xl">
+        <p className="text-base font-extrabold">System Guard: Record Unresolved</p>
       </div>
     );
   }
@@ -125,16 +121,18 @@ const MyProfilePage = () => {
       {/* সাকসেস টোস্ট অ্যালার্ট */}
       {showToast && (
         <div className="fixed top-5 right-5 z-50 flex items-center gap-2 bg-emerald-500 text-zinc-950 px-4 py-3 rounded-xl shadow-lg text-sm font-extrabold animate-in fade-in slide-in-from-top-4 duration-300">
-          <CheckCircle className="w-5 h-5" /> Profile Updated Successfully!
+          <CheckCircle className="w-5 h-5" /> Master Records Updated!
         </div>
       )}
 
       {/* প্রোফাইল হেডার ও অ্যাকশন বাটন */}
       <div className="flex items-center justify-between border-b border-current/10 pb-4">
-        <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-inherit">My Profile</h1>
-          <p className="text-xs opacity-50 font-bold mt-0.5">
-            Manage and update your freelancer public portfolio layout
+        <div className="space-y-1">
+          <h1 className="text-2xl md:text-3xl font-black tracking-tight text-inherit flex items-center gap-2">
+            <Terminal className="w-6 h-6 text-cyan-500 stroke-[2.5]" /> Root Profile
+          </h1>
+          <p className="text-xs opacity-50 font-bold">
+            System Administrator core cryptographic profile configurations
           </p>
         </div>
 
@@ -143,7 +141,7 @@ const MyProfilePage = () => {
             onClick={handleStartEdit}
             className="flex items-center gap-2 text-xs font-black uppercase tracking-widest bg-linear-to-r from-cyan-400 to-teal-400 text-zinc-950 px-4 py-3 rounded-xl shadow-[0_4px_14px_rgba(6,182,212,0.2)] hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer"
           >
-            <Edit2 className="w-3.5 h-3.5 stroke-[2.5]" /> Edit Profile
+            <Edit2 className="w-3.5 h-3.5 stroke-[2.5]" /> Edit Configurations
           </button>
         ) : (
           <div className="flex items-center gap-2">
@@ -163,7 +161,7 @@ const MyProfilePage = () => {
               ) : (
                 <Save className="w-3.5 h-3.5 stroke-[2.5]" />
               )}
-              {isSaving ? "Saving..." : "Save Changes"}
+              {isSaving ? "Saving..." : "Commit Changes"}
             </button>
           </div>
         )}
@@ -172,12 +170,12 @@ const MyProfilePage = () => {
       {/* মূল লেআউট গ্রিড */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        {/* বাম কলাম: অ্যাভাটার ও কুইক স্ট্যাটাস */}
+        {/* বাম কলাম: মেম্বার কার্ড ও কুইক অথ ডোমেন */}
         <div className="md:col-span-1 space-y-6">
           <div className="border border-current/10 bg-current/5 rounded-3xl p-6 shadow-sm flex flex-col items-center text-center relative overflow-hidden backdrop-blur-md">
             <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-bl from-cyan-400/10 to-transparent rounded-full blur-2xl" />
 
-            {/* প্রোফাইল ইমেজ আপলোড সেকশন */}
+            {/* প্রোফাইল ইমেজআপলোড */}
             <div className="relative p-1 bg-linear-to-tr from-cyan-400 to-teal-400 rounded-full shadow-[0_4px_12px_rgba(6,182,212,0.15)] group">
               <Image
                 src={
@@ -185,7 +183,7 @@ const MyProfilePage = () => {
                     ? (isEditing ? editedProfile.image : profile.image)
                     : "https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg"
                 }
-                alt="Avatar"
+                alt="Admin Avatar"
                 width={96}
                 height={96}
                 className="w-24 h-24 rounded-full object-cover bg-zinc-900"
@@ -201,14 +199,14 @@ const MyProfilePage = () => {
             <h2 className="text-lg font-extrabold text-inherit mt-4">
               {profile.name}
             </h2>
-            <p className="text-xs text-cyan-400 font-extrabold bg-cyan-500/10 px-3 py-1 rounded-xl border border-cyan-500/20 mt-1.5">
-              {profile.title || "Frontend Web Developer"}
+            <p className="text-[10px] uppercase font-black tracking-wider text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-xl border border-cyan-500/20 mt-1.5">
+              {profile.title || "System Administrator"}
             </p>
 
             <div className="w-full border-t border-current/10 pt-4 mt-4 space-y-3 text-left text-xs font-bold opacity-70">
               <div className="flex items-center justify-between gap-2">
                 <span className="flex items-center gap-1.5 shrink-0">
-                  <Mail className="w-3.5 h-3.5 text-cyan-500" /> Identity
+                  <Mail className="w-3.5 h-3.5 text-cyan-500" /> Root Mail
                 </span>
                 <span className="text-inherit opacity-90 truncate max-w-35">
                   {profile.email}
@@ -216,16 +214,27 @@ const MyProfilePage = () => {
               </div>
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-teal-400" /> Status
+                  <ShieldCheck className="w-3.5 h-3.5 text-teal-400" /> Security Status
                 </span>
                 <span
                   className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider ${
-                    profile.emailVerified ? "bg-teal-500/10 text-teal-400" : "bg-amber-500/10 text-amber-500"
+                    profile.role === "admin" ? "bg-teal-500/10 text-teal-400" : "bg-amber-500/10 text-amber-500"
                   }`}
                 >
-                  {profile.emailVerified ? "Verified" : "Unverified"}
+                  {profile.role || "Admin"}
                 </span>
               </div>
+            </div>
+          </div>
+
+          {/* অতিরিক্ত এডমিন প্রিমিয়াম ব্যাজ */}
+          <div className="border border-current/10 bg-current/5 rounded-3xl p-5 backdrop-blur-md flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 shrink-0 shadow-[0_0_12px_rgba(6,182,212,0.1)]">
+              <ShieldAlert className="w-5 h-5 stroke-2" />
+            </div>
+            <div>
+              <h4 className="text-xs font-black uppercase tracking-wider text-inherit">Access Privileges</h4>
+              <p className="text-[11px] opacity-50 font-bold mt-0.5">Full Read/Write Ledger Terminal Authority</p>
             </div>
           </div>
         </div>
@@ -234,11 +243,11 @@ const MyProfilePage = () => {
         <div className="md:col-span-2 space-y-6">
           <div className="border border-current/10 bg-current/5 rounded-3xl p-6 md:p-8 shadow-sm space-y-6 backdrop-blur-md">
             
-            {/* ১. নাম ও টাইটেল ফিল্ড */}
+            {/* ১. নাম ও পজিশন/টাইটেল ফিল্ড */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-black uppercase tracking-widest opacity-50">
-                  Full Name
+                  Identity Label (Name)
                 </label>
                 <input
                   type="text"
@@ -252,42 +261,25 @@ const MyProfilePage = () => {
 
               <div className="space-y-1.5">
                 <label className="text-xs font-black uppercase tracking-widest opacity-50">
-                  Professional Title
+                  System Title / Role Label
                 </label>
                 <input
                   type="text"
                   name="title"
-                  value={isEditing ? editedProfile.title : profile.title}
+                  value={isEditing ? (editedProfile?.title || "") : (profile?.title || "")}
                   onChange={handleInputChange}
                   disabled={!isEditing}
+                  placeholder="System Administrator"
                   className="w-full text-sm border border-current/10 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30 rounded-xl px-4 py-3 outline-none bg-current/5 disabled:opacity-50 disabled:cursor-not-allowed transition font-bold text-inherit placeholder:opacity-40"
                 />
               </div>
             </div>
 
-            {/* ২. আওয়ার্লি রেট ফিল্ড */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-black uppercase tracking-widest opacity-50">
-                Hourly Rate ($/hr)
-              </label>
-              <div className="relative flex items-center">
-                <span className="absolute left-4 text-sm font-bold opacity-50">$</span>
-                <input
-                  type="number"
-                  name="hourlyRate"
-                  value={isEditing ? editedProfile.hourlyRate || "" : profile.hourlyRate || ""}
-                  onChange={handleInputChange}
-                  disabled={!isEditing}
-                  className="w-full text-sm border border-current/10 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30 rounded-xl pl-8 pr-4 py-3 outline-none bg-current/5 disabled:opacity-50 disabled:cursor-not-allowed transition font-bold text-inherit placeholder:opacity-40"
-                />
-              </div>
-            </div>
-
-            {/* ইমেজের ইউআরএল ফিল্ড (শুধুমাত্র এডিট মোডে দেখাবে) */}
+            {/* ইমেজের ইউআরএল ফিল্ড */}
             {isEditing && (
               <div className="space-y-1.5 animate-in fade-in duration-200">
                 <label className="text-xs font-black uppercase tracking-widest opacity-50">
-                  Profile Image URL
+                  Global Avatar Web Asset Resource URL
                 </label>
                 <input
                   type="text"
@@ -299,70 +291,28 @@ const MyProfilePage = () => {
               </div>
             )}
 
-            {/* ৩. বায়ো ফিল্ড */}
+            {/* ২. বায়ো / ডেসক্রিপশন ফিল্ড */}
             <div className="space-y-1.5">
               <label className="text-xs font-black uppercase tracking-widest opacity-50">
-                Professional Summary (Bio)
+                Administrative Notes / Summary
               </label>
               <textarea
-                rows="4"
+                rows="5"
                 name="bio"
-                value={isEditing ? editedProfile.bio : profile.bio}
+                value={isEditing ? editedProfile.bio : profile.bio || ""}
                 onChange={handleInputChange}
                 disabled={!isEditing}
+                placeholder="Write system bio, rules summary, or custom structural profiles logs data notes here..."
                 className="w-full text-sm border border-current/10 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/30 rounded-xl px-4 py-3 outline-none bg-current/5 disabled:opacity-50 disabled:cursor-not-allowed transition resize-none leading-relaxed font-bold text-inherit placeholder:opacity-40"
               />
             </div>
 
-            {/* ৪. স্কিলস ম্যানেজমেন্ট সেকশন */}
-            <div className="space-y-3 pt-2 border-t border-current/5">
-              <label className="text-xs font-black uppercase tracking-widest opacity-50 block">
-                Skills & Core Expertise
-              </label>
-
-              {/* স্কিল ট্যাগ লিস্ট */}
-              <div className="flex flex-wrap gap-2">
-                {(isEditing ? editedProfile.skills : profile.skills).map((skill, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center gap-1.5 bg-current/5 border border-current/10 text-inherit px-3 py-1.5 rounded-xl text-xs font-bold transition"
-                  >
-                    {skill}
-                    {isEditing && (
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSkill(skill)}
-                        className="p-0.5 rounded-full hover:bg-rose-500/20 text-rose-500 transition cursor-pointer"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    )}
-                  </span>
-                ))}
-              </div>
-
-              {/* নতুন স্কিল যোগ করার ইনপুট */}
-              {isEditing && (
-                <form
-                  onSubmit={handleAddSkill}
-                  className="flex gap-2 pt-2 max-w-xs animate-in fade-in duration-200"
-                >
-                  <input
-                    type="text"
-                    placeholder="Add a skill (e.g. Next.js)"
-                    value={newSkill}
-                    onChange={(e) => setNewSkill(e.target.value)}
-                    className="w-full text-xs border border-current/10 focus:border-cyan-500 rounded-xl px-3 py-2.5 outline-none bg-current/5 text-inherit font-bold placeholder:opacity-40"
-                  />
-                  <button
-                    type="submit"
-                    className="bg-linear-to-r from-cyan-400 to-teal-400 text-zinc-950 p-2.5 rounded-xl shadow-sm hover:opacity-95 transition shrink-0 flex items-center justify-center cursor-pointer"
-                  >
-                    <Plus className="w-4 h-4 stroke-[2.5]" />
-                  </button>
-                </form>
-              )}
+            {/* ৩. সিস্টেম লগ স্ট্যাটাস বা টাইম স্ট্যাম্প */}
+            <div className="pt-4 border-t border-current/10 flex flex-wrap gap-4 text-[10px] uppercase font-black tracking-wider opacity-40">
+              <div>Created At: {new Date(profile.createdAt).toLocaleDateString()}</div>
+              <div>System Status: Operational</div>
             </div>
+
           </div>
         </div>
       </div>
@@ -370,4 +320,4 @@ const MyProfilePage = () => {
   );
 };
 
-export default MyProfilePage;
+export default AdminProfilePage;

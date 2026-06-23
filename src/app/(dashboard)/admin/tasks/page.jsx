@@ -102,7 +102,7 @@ export default function TaskManagement() {
   }
 
   return (
-    <div className="p-6 min-h-screen text-inherit relative">
+    <div className="px-6 mt-12 md:mt-0 min-h-screen text-inherit relative">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-inherit">Task Management</h1>

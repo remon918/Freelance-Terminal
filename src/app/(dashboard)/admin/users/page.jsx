@@ -88,7 +88,7 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="p-6 min-h-screen text-inherit">
+    <div className="px-6 mt-12 md:mt-0 min-h-screen text-inherit">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-inherit">User Management</h1>
